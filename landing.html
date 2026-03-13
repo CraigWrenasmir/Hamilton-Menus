@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beaumont Street Menus</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --surface: #1a1d24;
+    --surface-hover: #22262f;
+    --border: #2a2e38;
+    --text: #e8e9ec;
+    --text-muted: #8b8f9a;
+    --accent: #e85d3a;
+  }
+
+  [data-theme="light"] {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface-hover: #f0f1f3;
+    --border: #d8dbe0;
+    --text: #1a1d24;
+    --text-muted: #5f6470;
+    --accent: #d14b28;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+    gap: 1.25rem;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .tile {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .tile:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(232, 93, 58, 0.15);
+  }
+
+  .tile-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+
+  .tile-icon.all {
+    background: linear-gradient(135deg, #e85d3a22, #e85d3a11);
+    border: 1px solid #e85d3a33;
+  }
+
+  .tile-icon.all svg {
+    width: 36px;
+    height: 36px;
+    color: var(--accent);
+  }
+
+  .tile-icon.grain {
+    background: linear-gradient(135deg, #4a7c5922, #4a7c5911);
+    border: 1px solid #4a7c5933;
+  }
+
+  .tile-icon.eight-buns {
+    background: linear-gradient(135deg, #c4444422, #c4444411);
+    border: 1px solid #c4444433;
+  }
+
+  .tile-icon.cappadocia {
+    background: linear-gradient(135deg, #d4873322, #d4873311);
+    border: 1px solid #d4873333;
+  }
+
+  .tile-icon.sushi-revolution {
+    background: linear-gradient(135deg, #e8475722, #e8475711);
+    border: 1px solid #e8475733;
+  }
+
+  .tile-icon.in-forno {
+    background: linear-gradient(135deg, #8b5e3c22, #8b5e3c11);
+    border: 1px solid #8b5e3c33;
+  }
+
+  .tile-icon.rajs-corner {
+    background: linear-gradient(135deg, #e6a81722, #e6a81711);
+    border: 1px solid #e6a81733;
+  }
+
+  .tile-icon.son-of-a-gun {
+    background: linear-gradient(135deg, #6b8e2322, #6b8e2311);
+    border: 1px solid #6b8e2333;
+  }
+
+  .tile-icon.guzman-y-gomez {
+    background: linear-gradient(135deg, #f5c51822, #f5c51811);
+    border: 1px solid #f5c51833;
+  }
+
+  .tile-info {
+    text-align: center;
+  }
+
+  .tile-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .tile-detail {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .tile-cuisine {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cuisine-thai {
+    background: #4a7c5922;
+    color: #7bc4a0;
+  }
+
+  .cuisine-chinese {
+    background: #c4444422;
+    color: #e89090;
+  }
+
+  .cuisine-turkish {
+    background: #d4873322;
+    color: #e8b87c;
+  }
+
+  .cuisine-japanese {
+    background: #e8475722;
+    color: #f09090;
+  }
+
+  .cuisine-italian {
+    background: #8b5e3c22;
+    color: #d4a574;
+  }
+
+  .cuisine-indian {
+    background: #e6a81722;
+    color: #f0c860;
+  }
+
+  .cuisine-australian {
+    background: #6b8e2322;
+    color: #a8d45c;
+  }
+
+  .cuisine-mexican {
+    background: #f5c51822;
+    color: #f5d54a;
+  }
+
+  .cuisine-all {
+    background: #e85d3a18;
+    color: var(--accent);
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    z-index: 10;
+  }
+
+  .theme-toggle:hover {
+    border-color: #444;
+    color: var(--text);
+  }
+
+  [data-theme="light"] .theme-toggle:hover {
+    border-color: #aaa;
+  }
+
+  /* Light mode cuisine badge text adjustments */
+  [data-theme="light"] .cuisine-thai { background: #4a7c5922; color: #2d6a4f; }
+  [data-theme="light"] .cuisine-chinese { background: #c4444422; color: #a03030; }
+  [data-theme="light"] .cuisine-turkish { background: #d4873322; color: #a06020; }
+  [data-theme="light"] .cuisine-japanese { background: #e8475722; color: #b03040; }
+  [data-theme="light"] .cuisine-italian { background: #8b5e3c22; color: #6b4528; }
+  [data-theme="light"] .cuisine-indian { background: #e6a81722; color: #b08010; }
+  [data-theme="light"] .cuisine-australian { background: #6b8e2322; color: #4a6a18; }
+  [data-theme="light"] .cuisine-mexican { background: #f5c51822; color: #b09010; }
+  [data-theme="light"] .cuisine-all { background: #e85d3a18; color: var(--accent); }
+
+  [data-theme="light"] .tile:hover {
+    box-shadow: 0 8px 30px rgba(232, 93, 58, 0.1);
+  }
+
+  @media (max-width: 500px) {
+    body { padding: 1.25rem 1rem; padding-top: 3.5rem; }
+    .hero { margin-bottom: 2rem; }
+    .hero h1 { font-size: 1.8rem; }
+    .hero p { font-size: 0.9rem; }
+    .tiles { grid-template-columns: 1fr; max-width: 340px; }
+    .tile { padding: 1.5rem 1.25rem; flex-direction: row; text-align: left; }
+    .tile-icon { width: 56px; height: 56px; border-radius: 12px; font-size: 1.5rem; }
+    .tile-info { text-align: left; }
+    .tile-name { font-size: 1.05rem; }
+    .tile-detail { font-size: 0.78rem; }
+    .theme-toggle { top: 0.75rem; right: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Beaumont Street Menus</h1>
+  <p>Pick a restaurant or browse them all</p>
+</div>
+
+<div class="tiles">
+
+  <a class="tile" href="index.html?restaurant=all">
+    <div class="tile-icon all">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
+      </svg>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">All Restaurants</div>
+      <div class="tile-detail">Browse every dish across all our favourite spots</div>
+      <span class="tile-cuisine cuisine-all">All menus</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=the-grain">
+    <div class="tile-icon grain">
+      <span>🌾</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">The Grain</div>
+      <div class="tile-detail">Lunch specials &mdash; fried rice, stir fry, curry &amp; noodles</div>
+      <span class="tile-cuisine cuisine-thai">Thai</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=eight-buns">
+    <div class="tile-icon eight-buns">
+      <span>🥟</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">Eight Buns</div>
+      <div class="tile-detail">Buns, dumplings, noodles, stir fry &amp; more &mdash; 47 Beaumont St, Hamilton</div>
+      <span class="tile-cuisine cuisine-chinese">Chinese / Asian</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=sushi-revolution">
+    <div class="tile-icon sushi-revolution">
+      <span>🍣</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">Sushi Revolution</div>
+      <div class="tile-detail">Sushi rolls, nigiri, ramen, donburi, curry &amp; more &mdash; Hamilton</div>
+      <span class="tile-cuisine cuisine-japanese">Japanese</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=cappadocia">
+    <div class="tile-icon cappadocia">
+      <span>🥙</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">Cappadocia</div>
+      <div class="tile-detail">Pides, kebabs, burgers &amp; snack packs</div>
+      <span class="tile-cuisine cuisine-turkish">Turkish</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=in-forno">
+    <div class="tile-icon in-forno">
+      <span>🍕</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">In Forno</div>
+      <div class="tile-detail">Woodfired pizza, pasta, risotto, mains &amp; desserts &mdash; Hamilton</div>
+      <span class="tile-cuisine cuisine-italian">Italian</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=rajs-corner">
+    <div class="tile-icon rajs-corner">
+      <span>🍛</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">Raj's Corner</div>
+      <div class="tile-detail">Curries, biryani, dosa, naan, combos &amp; Indian sweets</div>
+      <span class="tile-cuisine cuisine-indian">Indian</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=son-of-a-gun">
+    <div class="tile-icon son-of-a-gun">
+      <span>🔥</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">Son Of A Gun</div>
+      <div class="tile-detail">Brekkie, burgers, tacos, loaded fries, smokehouse &amp; desserts</div>
+      <span class="tile-cuisine cuisine-australian">Australian</span>
+    </div>
+  </a>
+
+  <a class="tile" href="index.html?restaurant=guzman-y-gomez">
+    <div class="tile-icon guzman-y-gomez">
+      <span>🌮</span>
+    </div>
+    <div class="tile-info">
+      <div class="tile-name">Guzman Y Gomez</div>
+      <div class="tile-detail">Burritos, bowls, tacos, nachos, quesadillas &amp; more</div>
+      <span class="tile-cuisine cuisine-mexican">Mexican</span>
+    </div>
+  </a>
+
+</div>
+
+<button class="theme-toggle" id="themeToggle">Light</button>
+
+<script>
+const themeToggle = document.getElementById("themeToggle");
+const savedTheme = localStorage.getItem("menu-theme") || "dark";
+document.documentElement.setAttribute("data-theme", savedTheme);
+themeToggle.textContent = savedTheme === "dark" ? "Light" : "Dark";
+
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("menu-theme", next);
+  themeToggle.textContent = next === "dark" ? "Light" : "Dark";
+});
+</script>
+
+</body>
+</html>

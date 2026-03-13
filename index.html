@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beaumont Street Menus</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --surface: #1a1d24;
+    --surface-hover: #22262f;
+    --border: #2a2e38;
+    --text: #e8e9ec;
+    --text-muted: #8b8f9a;
+    --accent: #e85d3a;
+    --accent-hover: #f06a48;
+    --tag-gf: #2d6a4f;
+    --tag-spicy: #9d3a1a;
+    --tag-veg: #5a7a2e;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --tag-gf-text: #a8e6cf;
+    --tag-spicy-text: #ffb299;
+    --tag-veg-text: #c5e07c;
+    --tag-restaurant-bg: rgba(255,255,255,0.06);
+  }
+
+  [data-theme="light"] {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface-hover: #f0f1f3;
+    --border: #d8dbe0;
+    --text: #1a1d24;
+    --text-muted: #5f6470;
+    --accent: #d14b28;
+    --accent-hover: #c04020;
+    --tag-gf: #d6f0e2;
+    --tag-spicy: #fde0d6;
+    --tag-veg: #e4f0c8;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --tag-gf-text: #1a6b42;
+    --tag-spicy-text: #9d3a1a;
+    --tag-veg-text: #3d5a14;
+    --tag-restaurant-bg: rgba(0,0,0,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 2rem 1.5rem 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  header p {
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  .controls {
+    max-width: 1200px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .meal-tabs {
+    display: flex;
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 2px;
+  }
+
+  .meal-tab {
+    padding: 0.5rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .meal-tab.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .meal-tab:hover:not(.active) {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    width: 16px;
+    height: 16px;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box input::placeholder { color: var(--text-muted); }
+  .search-box input:focus { border-color: var(--accent); }
+
+  .filter-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232, 93, 58, 0.1);
+  }
+
+  .filter-btn:hover:not(.active) {
+    border-color: #444;
+    color: var(--text);
+  }
+
+  .restaurant-filter {
+    position: relative;
+  }
+
+  .restaurant-filter select {
+    appearance: none;
+    padding: 0.55rem 2rem 0.55rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .restaurant-filter select:focus { border-color: var(--accent); }
+
+  .restaurant-filter::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid var(--text-muted);
+    pointer-events: none;
+  }
+
+  .results-info {
+    max-width: 1200px;
+    margin: 1rem auto 0;
+    padding: 0 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .menu-grid {
+    max-width: 1200px;
+    margin: 1rem auto 2rem;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+    gap: 1rem;
+  }
+
+  .category-header {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .category-header:first-child { margin-top: 0; }
+
+  .category-header h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .category-header .count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .menu-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .menu-card:hover {
+    border-color: #3a3e48;
+    background: var(--surface-hover);
+    box-shadow: var(--card-shadow);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .card-top h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .price-range {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .card-desc {
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 0.15rem;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .tag-gf { background: var(--tag-gf); color: var(--tag-gf-text); }
+  .tag-spicy { background: var(--tag-spicy); color: var(--tag-spicy-text); }
+  .tag-vegetarian { background: var(--tag-veg); color: var(--tag-veg-text); }
+  .tag-restaurant {
+    background: var(--tag-restaurant-bg);
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .pricing-detail {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+    margin-top: 0.15rem;
+  }
+
+  .pricing-detail .price-val {
+    text-align: right;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+  }
+
+  .no-results p:first-child {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-toggle {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .price-toggle.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232, 93, 58, 0.1);
+  }
+
+  [data-theme="light"] .menu-card:hover {
+    border-color: #c0c4cc;
+  }
+
+  [data-theme="light"] .restaurant-filter select {
+    background: var(--surface);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--accent); }
+
+  .theme-toggle {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
+  .theme-toggle:hover {
+    border-color: #444;
+    color: var(--text);
+  }
+
+  [data-theme="light"] .theme-toggle:hover {
+    border-color: #aaa;
+  }
+
+  @media (max-width: 600px) {
+    .menu-grid { grid-template-columns: 1fr; padding: 0 1rem; }
+    .controls { gap: 0.5rem; padding: 0 1rem; }
+    header { padding: 1.25rem 1rem 0; }
+    header h1 { font-size: 1.4rem; }
+    header p { font-size: 0.85rem; }
+    .results-info { padding: 0 1rem; }
+
+    .search-box { min-width: 0; flex-basis: 100%; order: 1; }
+    .search-box input { font-size: 16px; }
+    .restaurant-filter { flex-basis: 100%; order: 2; }
+    .restaurant-filter select { width: 100%; font-size: 16px; }
+    .meal-tabs { order: 0; }
+    .filter-group { order: 3; flex-basis: 100%; }
+    .price-toggle { order: 4; }
+    .theme-toggle { order: 5; margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="landing.html" class="back-link">&larr; All Restaurants</a>
+  <h1 id="pageTitle">Beaumont Street Menus</h1>
+  <p id="pageSubtitle">Search and filter dishes from our favourite spots</p>
+</header>
+
+<div class="controls">
+  <div class="meal-tabs">
+    <button class="meal-tab active" data-meal="lunch">Lunch</button>
+    <button class="meal-tab" data-meal="dinner">Dinner</button>
+  </div>
+  <div class="restaurant-filter">
+    <select id="restaurantFilter">
+      <option value="all">All Restaurants</option>
+      <option value="the-grain">The Grain</option>
+      <option value="eight-buns">Eight Buns</option>
+      <option value="cappadocia">Cappadocia</option>
+      <option value="sushi-revolution">Sushi Revolution</option>
+      <option value="in-forno">In Forno</option>
+      <option value="rajs-corner">Raj's Corner</option>
+      <option value="son-of-a-gun">Son Of A Gun</option>
+      <option value="guzman-y-gomez">Guzman Y Gomez</option>
+    </select>
+  </div>
+  <div class="search-box">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search dishes, ingredients...">
+  </div>
+  <div class="filter-group">
+    <button class="filter-btn" data-filter="gf">Gluten Free</button>
+    <button class="filter-btn" data-filter="spicy">Spicy</button>
+    <button class="filter-btn" data-filter="vegetarian">Vegetarian</button>
+  </div>
+  <button class="price-toggle" id="priceToggle">Show Prices</button>
+  <button class="theme-toggle" id="themeToggle">Light</button>
+</div>
+
+<div class="results-info" id="resultsInfo"></div>
+<div class="menu-grid" id="menuGrid"></div>
+
+<script>
+const menuData = [
+  // === THE GRAIN - LUNCH - FRIED RICES ===
+  {
+    name: "Thai Fried Rice",
+    description: "Wok fried rice, egg, onion, garlic, mixed vegetables, and your choice of meat",
+    category: "Fried Rices",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Cashew Nut Fried Rice",
+    description: "Wok fried rice, egg, cashew nut, garlic, vegetables, and your choice of meat, in mild chilli jam sauce",
+    category: "Fried Rices",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Chilli Basil Fried Rice",
+    description: "Wok fried rice, egg, chilli & basil, onion, garlic, vegetables, and your choice of meat",
+    category: "Fried Rices",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Satay Fried Rice",
+    description: "Wok fried rice, egg, vegetables and your choice of meat, in The Grain peanut-based sauce",
+    category: "Fried Rices",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Pineapple Fried Rice",
+    description: "Wok fried rice, egg, pineapple, onion, tomato, vegetables, and your choice of meat topped with fried shallot",
+    category: "Fried Rices",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Tom Yum Fried Rice",
+    description: "Wok fried rice in tom yum paste, egg, garlic, lemongrass, kaffir lime leaves, vegetables, and your choice of meat",
+    category: "Fried Rices",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+
+  // === THE GRAIN - LUNCH - STIR FRY ===
+  {
+    name: "Cashew Nut Sauce",
+    description: "Wok fried vegetables, cashew nut, and your choice of meat, in mild chilli jam sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Chilli and Basil Sauce",
+    description: "Wok fried garlic, vegetables, bamboo shoot, mushroom and your choice of meat, in chilli & basil sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Garlic and Pepper Sauce",
+    description: "Wok fried vegetables, garlic, ground black pepper, and your choice of meat, in garlic sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Oyster Sauce",
+    description: "Wok fried vegetables and your choice of meat, in oyster sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Satay Sauce",
+    description: "Wok fried vegetables, and choice of meat in The Grain peanut-based sauce, served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Ginger Sauce",
+    description: "Wok fried vegetables, ginger, and your choice of meat, in fresh ginger sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Lemongrass Sauce",
+    description: "Wok fried vegetables, fresh lemongrass, and your choice of meat, in soy sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Sweet Creamy Chilli Basil Sauce",
+    description: "Wok fried chilli, garlic, vegetables, bamboo shoot, green beans and your choice of meat, in sweet coconut milk sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Black Bean Sauce",
+    description: "Wok fried vegetables and your choice of meat, in black bean sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Sweet and Sour",
+    description: "Wok fried vegetables, pineapple, and your choice of meat, in sweet and sour sauce served with steamed rice",
+    category: "Stir Fry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+
+  // === THE GRAIN - LUNCH - CURRY ===
+  {
+    name: "Red Curry",
+    description: "Red curry, basil, bamboo shoots, vegetables and your choice of meat served with steamed rice",
+    category: "Curry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy", "gf"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Green Curry",
+    description: "Green curry, basil, bamboo shoots, vegetables and your choice of meat served with steamed rice",
+    category: "Curry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy", "gf"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Panang Curry",
+    description: "Mild panang curry, pumpkin wedges, vegetables and your choice of meat served with steamed rice",
+    category: "Curry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy", "gf"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Mussaman Beef Curry",
+    description: "Tender braised beef in mild mussaman curry, potatoes topped with cashew nut and fried shallots served with steamed rice",
+    category: "Curry",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["gf"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+
+  // === THE GRAIN - LUNCH - NOODLES ===
+  {
+    name: "Pad Thai",
+    description: "Wok fried thin rice noodles, egg, shallots, bean sprouts, and your choice of meat, in home-made pad thai sauce, with a side of ground peanut, lemon wedge",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["gf"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Pad See Ew",
+    description: "Wok fried thick rice noodles, egg, vegetables, and your choice of meat, in see ew (soy) sauce",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Hokkien Noodle",
+    description: "Wok fried egg noodles, egg, vegetables, and your choice of meat, in mild chilli jam and oyster sauce",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Satay Noodle",
+    description: "Wok fried thick rice noodles, egg, vegetables and your choice of meat, in The Grain peanut-based sauce",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Cashew Nut Noodle",
+    description: "Wok fried thick rice noodles, egg, cashew nut, vegetables, and your choice of meat, in mild chilli jam sauce",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Chilli & Basil Noodle",
+    description: "Wok fried thick rice noodles, egg, garlic, vegetables, chilli & basil, and your choice of meat",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: ["spicy"],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  },
+  {
+    name: "Coconut Cream Noodle",
+    description: "Wok fried thick rice noodles, egg, vegetables, and your choice of meat in The Grain coconut cream sauce",
+    category: "Noodles",
+    restaurant: "the-grain",
+    meal: "lunch",
+    tags: [],
+    prices: { "Vegetables": 15.50, "Chicken / Beef / Pork / Tofu": 16.50, "Duck / Crispy Pork": 18.50, "Prawns / Seafood": 18.50 }
+  }
+].concat(
+  // === EIGHT BUNS — same menu for lunch & dinner ===
+  ["lunch","dinner"].flatMap(meal => [
+
+  // --- Buns & Dumplings ---
+  { name:"Steamed Spinach & Prawn Dumplings (3pc)", description:"Delicate steamed dumplings with spinach and prawn filling", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Steamed Chives & Prawn Dumplings (3pc)", description:"Steamed dumplings with chives and prawn", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Steamed Chicken Feet", description:"Traditional steamed chicken feet", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Steamed Prawn, Pork & Water Chestnut Siu Mai (3pc)", description:"Classic siu mai with prawn, pork and water chestnut", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":9.80} },
+  { name:"Steamed Melting Custard Bun (3pc)", description:"Fluffy steamed buns with molten custard filling", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":8.50} },
+  { name:"Seven Color Mini Pork Bun", description:"Assorted colourful mini pork buns", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":14.80} },
+  { name:"Char Siu Long Bai / Mini Bun (Pack 6)", description:"Pack of 6 char siu or mini buns", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":14.80} },
+  { name:"Pan Fried Pork Bun (8 pcs)", description:"Crispy pan-fried pork buns", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":15.80} },
+  { name:"B.B.Q Pork Bun (3pc)", description:"Classic BBQ pork buns", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.00} },
+  { name:"Prawn Har Gow (3pc)", description:"Traditional crystal prawn dumplings", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Chives Pancake", description:"Pan-fried chives pancake", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":9.80} },
+  { name:"Vegetarian Spring Roll (4 pcs)", description:"Crispy fried vegetarian spring rolls", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Prawn Spring Roll (2 pcs)", description:"Crispy fried prawn spring rolls", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.00} },
+  { name:"Steamed Prawn Dumpling (3 pcs)", description:"Steamed prawn dumplings", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Sinkiao Dumplings (3pc)", description:"Sinkiao-style dumplings", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Steamed Vegetarian Dumpling", description:"Steamed dumplings with vegetable filling", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Pan Fried Pork & Chives Dumpling (8pc)", description:"Crispy pan-fried dumplings with pork and chives", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":15.80} },
+  { name:"Pan Fried Prawn & Pork Mushroom Dumpling (8pc)", description:"Pan-fried dumplings with prawn, pork and mushroom", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":15.80} },
+  { name:"Mushroom Dumplings (3 pcs)", description:"Steamed mushroom dumplings", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":15.80} },
+  { name:"Prawn & Pork Wontons in Spicy Sauce", description:"Wontons in a spicy chilli sauce", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":10.80} },
+  { name:"Prawn & Pork Wontons in Peanut Sauce", description:"Wontons in a rich peanut sauce", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":10.80} },
+  { name:"Small Pork Wontons in Clear Soup", description:"Light clear soup with pork wontons", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Large Steamed Pork Bun", description:"Large fluffy steamed pork bun", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":5.80} },
+  { name:"Large Steamed Vegetarian Bun", description:"Large fluffy steamed vegetarian bun", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":5.80} },
+  { name:"Large Steamed Juicy Pork Bun", description:"Large steamed bun with juicy pork filling", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":5.80} },
+  { name:"Prawn & Pork Boiled Dumplings", description:"Boiled dumplings with prawn and pork", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":14.80} },
+  { name:"Pork & Chives Boiled Dumplings", description:"Boiled dumplings with pork and chives", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:[], prices:{"":11.80} },
+  { name:"Sweet & Spicy Roast Pork", description:"Roast pork in sweet and spicy glaze", category:"Buns & Dumplings", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":14.80} },
+
+  // --- Roti ---
+  { name:"Roti with Curry Sauce", description:"Flaky roti bread served with curry dipping sauce", category:"Roti", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+
+  // --- Cold Dish ---
+  { name:"Sizzling Prawns with Garlic Sauce", description:"Sizzling hot plate of prawns in garlic sauce", category:"Cold Dish & Sizzling", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":30.80} },
+  { name:"Mustard Salad Satay Stewer", description:"Salad with mustard dressing and satay skewers", category:"Cold Dish & Sizzling", restaurant:"eight-buns", meal, tags:[], prices:{"":38.80} },
+  { name:"Satay Stewer", description:"Grilled satay skewers", category:"Cold Dish & Sizzling", restaurant:"eight-buns", meal, tags:[], prices:{"":30.80} },
+
+  // --- Snacks (Must Try) ---
+  { name:"Chinese Roast in Beijing Style", description:"Beijing-style Chinese roast", category:"Snacks (Must Try)", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":20.80} },
+  { name:"Chinese Roll in Cumin", description:"Cumin-spiced Chinese roll", category:"Snacks (Must Try)", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":19.90} },
+  { name:"Plain Chinese Roll", description:"Traditional Chinese roll", category:"Snacks (Must Try)", restaurant:"eight-buns", meal, tags:[], prices:{"":17.80} },
+  { name:"Sichuan Pepper Fried Chicken", description:"Crispy fried chicken with Sichuan pepper", category:"Snacks (Must Try)", restaurant:"eight-buns", meal, tags:["spicy","recommended"], prices:{"":19.80} },
+  { name:"Kung Pao Chicken Bites", description:"Spicy kung pao style chicken bites", category:"Snacks (Must Try)", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":19.80} },
+  { name:"Salt & Pepper Tofu Bites", description:"Crispy salt and pepper tofu", category:"Snacks (Must Try)", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":16.80} },
+
+  // --- Noodles ---
+  { name:"Fried Noodle in Black Pepper", description:"Wok-fried noodles in black pepper sauce", category:"Noodles", restaurant:"eight-buns", meal, tags:[], prices:{"":19.80} },
+  { name:"Dan Dan Noodle", description:"Classic Sichuan dan dan noodles with minced pork", category:"Noodles", restaurant:"eight-buns", meal, tags:["spicy","recommended"], prices:{"":18.80} },
+  { name:"Prawn Fried Noodle", description:"Wok-fried noodles with king prawns", category:"Noodles", restaurant:"eight-buns", meal, tags:[], prices:{"":22.80} },
+  { name:"Fried Noodle with Roast Duck", description:"Wok-fried noodles topped with roast duck", category:"Noodles", restaurant:"eight-buns", meal, tags:[], prices:{"":22.80} },
+  { name:"Seafood Laksa", description:"Rich coconut curry laksa with seafood", category:"Noodles", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":22.80} },
+  { name:"Vegetarian Laksa", description:"Coconut curry laksa with vegetables and tofu", category:"Noodles", restaurant:"eight-buns", meal, tags:["vegetarian","spicy"], prices:{"":19.80} },
+  { name:"Chicken Laksa", description:"Rich coconut curry laksa with chicken", category:"Noodles", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":20.80} },
+  { name:"Beef Noodle in Hot Pot", description:"Hearty beef noodle soup hot pot", category:"Noodles", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":22.80} },
+
+  // --- Beef ---
+  { name:"Stir Fried Beef and Spicy Sauce", description:"Tender beef stir-fried in spicy sauce", category:"Beef", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":25.80} },
+  { name:"Black Pepper Beef", description:"Wok-tossed beef in black pepper sauce", category:"Beef", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Fried Mango Beef", description:"Crispy beef with fresh mango", category:"Beef", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Kung Pao Beef", description:"Spicy kung pao beef with peanuts", category:"Beef", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":25.80} },
+
+  // --- Fish ---
+  { name:"Fried Barramundi Fillet", description:"Crispy fried barramundi fillet", category:"Fish", restaurant:"eight-buns", meal, tags:[], prices:{"":28.80} },
+  { name:"Steamed Barramundi with Ginger & Shallot", description:"Whole steamed barramundi with ginger and shallot", category:"Fish", restaurant:"eight-buns", meal, tags:[], prices:{"":28.80} },
+
+  // --- Chicken ---
+  { name:"Chongqing Style Chicken", description:"Sichuan-style spicy chicken with dried chillies", category:"Chicken", restaurant:"eight-buns", meal, tags:["spicy","recommended"], prices:{"":24.80} },
+  { name:"Kung Pao Chicken", description:"Classic kung pao chicken with peanuts and chilli", category:"Chicken", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":24.80} },
+  { name:"Salt & Pepper Chicken", description:"Crispy salt and pepper chicken pieces", category:"Chicken", restaurant:"eight-buns", meal, tags:[], prices:{"":29.80} },
+  { name:"Lemon Chicken", description:"Crispy chicken breast with lemon sauce", category:"Chicken", restaurant:"eight-buns", meal, tags:[], prices:{"":24.80} },
+  { name:"Fried Chicken Breast with Sweet Corn", description:"Fried chicken breast served with sweet corn", category:"Chicken", restaurant:"eight-buns", meal, tags:[], prices:{"":24.80} },
+  { name:"Stir Fried Chicken in Kong Bao", description:"Wok-tossed chicken in Kong Bao style sauce", category:"Chicken", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":24.80} },
+
+  // --- Pork ---
+  { name:"Twice Cooked Pork in Chilli Sauce", description:"Twice-cooked sliced pork belly in spicy sauce", category:"Pork", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":25.80} },
+  { name:"Sweet & Sour Pork", description:"Classic sweet and sour pork", category:"Pork", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Shredded Pork with Bean Sprout", description:"Stir-fried shredded pork with bean sprouts", category:"Pork", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Stir Fried Shredded Pork", description:"Wok-fried shredded pork with vegetables", category:"Pork", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Griddles Pork Intestines", description:"Stir-fried pork intestines on griddle", category:"Pork", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":25.80} },
+  { name:"Pork Ribs in Peking Sauce", description:"Tender pork ribs in Peking-style sauce", category:"Pork", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Salt & Pepper Pork Ribs", description:"Crispy salt and pepper pork ribs", category:"Pork", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+  { name:"Pork Ribs in Honey Pepper", description:"Pork ribs glazed with honey and pepper", category:"Pork", restaurant:"eight-buns", meal, tags:[], prices:{"":25.80} },
+
+  // --- Seafood ---
+  { name:"King Prawn & Cashew Nut", description:"Stir-fried king prawns with cashew nuts", category:"Seafood", restaurant:"eight-buns", meal, tags:[], prices:{"":27.80} },
+  { name:"Boiled Snakehead Fish in Chilli", description:"Whole snakehead fish boiled in chilli broth", category:"Seafood", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":37.80} },
+  { name:"Stir Fried Pip with Ginger & Shallot", description:"Stir-fried pippies with ginger and shallot", category:"Seafood", restaurant:"eight-buns", meal, tags:[], prices:{"":28.00} },
+  { name:"Stir Fried Pip with XO Sauce", description:"Stir-fried pippies in XO sauce", category:"Seafood", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":28.00} },
+  { name:"Salt and Pepper Squid", description:"Crispy salt and pepper squid", category:"Seafood", restaurant:"eight-buns", meal, tags:[], prices:{"":28.00} },
+  { name:"Stir Fried Seafood with Vegetables", description:"Mixed seafood stir-fried with seasonal vegetables", category:"Seafood", restaurant:"eight-buns", meal, tags:[], prices:{"":28.00} },
+  { name:"Stir Fried Squid in XO Sauce", description:"Wok-tossed squid in XO sauce", category:"Seafood", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":20.80} },
+  { name:"Egg Yolk Prawns", description:"King prawns coated in salted egg yolk", category:"Seafood", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":28.00} },
+
+  // --- Tofu ---
+  { name:"Mapo Tofu", description:"Silken tofu in spicy Sichuan sauce with minced pork", category:"Tofu", restaurant:"eight-buns", meal, tags:["spicy","recommended"], prices:{"":22.80} },
+  { name:"Salt & Pepper Tofu", description:"Crispy fried tofu with salt and pepper seasoning", category:"Tofu", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":22.80} },
+  { name:"Stir Fried Tofu with Vegetables", description:"Tofu stir-fried with mixed vegetables", category:"Tofu", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":22.80} },
+  { name:"Sweet & Sour Tofu", description:"Crispy tofu in sweet and sour sauce", category:"Tofu", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":22.80} },
+  { name:"Braised Chicken & Salty Fish Tofu", description:"Braised tofu with chicken and salty fish", category:"Tofu", restaurant:"eight-buns", meal, tags:[], prices:{"":24.80} },
+
+  // --- Omelette & Vegetable ---
+  { name:"Stir Fried Scrambled Egg", description:"Wok-fried scrambled egg", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":17.80} },
+  { name:"Stir Fried Garlic Sauce with Vegetables", description:"Seasonal vegetables in garlic sauce", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":19.80} },
+  { name:"Sweet & Sour Eggplant", description:"Eggplant in sweet and sour sauce", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":19.80} },
+  { name:"Fried Green Bean with Pork Mince", description:"Stir-fried green beans with pork mince", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:[], prices:{"":22.80} },
+  { name:"Chinese Broccoli with Oyster Sauce", description:"Steamed Chinese broccoli in oyster sauce", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":19.80} },
+  { name:"Garlic Baby Bok Choy", description:"Stir-fried baby bok choy with garlic", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":19.80} },
+  { name:"Egg and Spinach Stir Fry", description:"Wok-fried egg with fresh spinach", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":22.80} },
+  { name:"Eight Buns Special Fried Vegetables", description:"Chef's special stir-fried seasonal vegetables", category:"Omelette & Vegetable", restaurant:"eight-buns", meal, tags:["vegetarian","recommended"], prices:{"":22.80} },
+
+  // --- Fried Rice ---
+  { name:"Fried Rice with King Prawn", description:"Wok-fried rice with king prawns", category:"Fried Rice", restaurant:"eight-buns", meal, tags:[], prices:{"":22.80} },
+  { name:"Special Fried Rice", description:"House special fried rice with mixed meats and vegetables", category:"Fried Rice", restaurant:"eight-buns", meal, tags:["recommended"], prices:{"":20.80} },
+  { name:"Fried Rice with Beef", description:"Wok-fried rice with beef", category:"Fried Rice", restaurant:"eight-buns", meal, tags:[], prices:{"":20.80} },
+  { name:"Fried Rice with Chinese Sausage", description:"Wok-fried rice with Chinese sausage", category:"Fried Rice", restaurant:"eight-buns", meal, tags:[], prices:{"":20.80} },
+  { name:"Vegetarian Fried Rice", description:"Wok-fried rice with seasonal vegetables", category:"Fried Rice", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":18.80} },
+
+  // --- Soups & Desserts ---
+  { name:"Hot & Sour Soup", description:"Classic Chinese hot and sour soup", category:"Soups & Desserts", restaurant:"eight-buns", meal, tags:["spicy"], prices:{"":9.80} },
+  { name:"Chicken Corn Soup", description:"Creamy chicken and corn soup", category:"Soups & Desserts", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Mini Golden Bun", description:"Crispy mini golden fried buns", category:"Soups & Desserts", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Cake with Brown Sugar", description:"Warm cake with brown sugar glaze", category:"Soups & Desserts", restaurant:"eight-buns", meal, tags:[], prices:{"":9.80} },
+  { name:"Raspberry & Mint Ice Sorbet", description:"Refreshing raspberry and mint sorbet", category:"Soups & Desserts", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":9.80} },
+  { name:"Honey Citron Tea", description:"Sweet honey citron tea", category:"Soups & Desserts", restaurant:"eight-buns", meal, tags:["vegetarian"], prices:{"":6.80} },
+  ])
+).concat(
+  // === CAPPADOCIA — same menu for lunch & dinner ===
+  ["lunch","dinner"].flatMap(meal => [
+
+  // --- Pides ($17.00) ---
+  { name:"Kiymali Pide", description:"Ground beef, onion, tomato, capsicum, parsley & chilli", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy"], prices:{"":17.00} },
+  { name:"Kusbasili Pide", description:"Diced leg of lamb, onion, tomato, capsicum, parsley & chilli", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy"], prices:{"":17.00} },
+  { name:"Sucuklu Pide", description:"Turkish sausage, cheese, egg, parsley & chilli", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy"], prices:{"":17.00} },
+  { name:"Pastirmali Pide", description:"Cured beef in garlic, cheese, egg & chilli", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy"], prices:{"":17.00} },
+  { name:"Chicken Pide", description:"With onion, tomato, parsley & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Chicken Hawaiian Pide", description:"With pineapple, onion, tomato, parsley & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Chicken Mushroom Pide", description:"With onion, tomato, cheese, capsicum & garlic", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Cappadocia Special Pide", description:"Turkish sausage, cured beef, garlic, onion, tomato, spinach, chilli & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy","recommended"], prices:{"":17.00} },
+  { name:"House Special Pide", description:"Turkish sausage, mushroom, onion, tomato, spinach & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["recommended"], prices:{"":17.00} },
+  { name:"Spicy Beef Pide", description:"With onion, tomato & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy"], prices:{"":17.00} },
+  { name:"Hawaiian Beef Pide", description:"With pineapple, onion, tomato & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"The Works Pide", description:"A bit of everything", category:"Pides", restaurant:"cappadocia", meal, tags:["recommended"], prices:{"":17.00} },
+  { name:"Spicy Potato Pide", description:"With onion, tomato, spinach, spices & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["vegetarian","spicy"], prices:{"":17.00} },
+  { name:"Mushroom Pide", description:"With onion, tomato & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":17.00} },
+  { name:"Vegetarian Works Pide", description:"A bit of everything with/without egg", category:"Pides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":17.00} },
+  { name:"Eggplant Pide", description:"With onion, tomato, cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":17.00} },
+  { name:"Falafel Pide", description:"Onion, tomato, parsley, garlic & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":17.00} },
+  { name:"Peynirli Pide", description:"Cheese, egg, parsley, spinach or fetta cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":17.00} },
+  { name:"Hawaiian Bacon Pide", description:"With pineapple, onion, tomato & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Mexican Pide", description:"Cheese, pepperoni, capsicum & tomato", category:"Pides", restaurant:"cappadocia", meal, tags:["spicy"], prices:{"":17.00} },
+  { name:"Margarita Pide", description:"Cheese, pepperoni, cabanossi, mushroom & tomato", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Supreme Pide", description:"Cheese, pepperoni, cabanossi, mushroom & onion", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Seafood Pide", description:"With marinara tomato, onion, garlic, oregano & cheese", category:"Pides", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Meat Lovers Pide", description:"All the meats and cheese", category:"Pides", restaurant:"cappadocia", meal, tags:["recommended"], prices:{"":17.00} },
+
+  // --- Sides & Breads ---
+  { name:"Garlic Bread", description:"Toasted garlic bread", category:"Sides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":5.00} },
+  { name:"Plain Turkish Bread", description:"Fresh plain Turkish bread", category:"Sides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":4.00} },
+  { name:"Small Hot Chips", description:"Small serve of hot chips", category:"Sides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":5.00} },
+  { name:"Large Hot Chips", description:"Large serve of hot chips", category:"Sides", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":8.00} },
+  { name:"Chips with Gravy", description:"Hot chips topped with gravy", category:"Sides", restaurant:"cappadocia", meal, tags:[], prices:{"":9.00} },
+
+  // --- Kebab Rolls ---
+  { name:"Beef Kebab Roll", description:"Beef kebab in fresh Turkish bread roll", category:"Kebab Rolls", restaurant:"cappadocia", meal, tags:[], prices:{"":12.50} },
+  { name:"Chicken Kebab Roll", description:"Chicken kebab in fresh Turkish bread roll", category:"Kebab Rolls", restaurant:"cappadocia", meal, tags:[], prices:{"":13.00} },
+  { name:"Chicken Schnitzel Roll", description:"Chicken schnitzel in fresh Turkish bread roll", category:"Kebab Rolls", restaurant:"cappadocia", meal, tags:[], prices:{"":13.00} },
+  { name:"Mixed Kebab Roll", description:"Mixed beef and chicken kebab in Turkish bread roll", category:"Kebab Rolls", restaurant:"cappadocia", meal, tags:[], prices:{"":14.00} },
+  { name:"Falafel Kebab Roll", description:"Falafel in fresh Turkish bread roll", category:"Kebab Rolls", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":12.50} },
+  { name:"Veggie Patty Roll", description:"Veggie patty in fresh Turkish bread roll", category:"Kebab Rolls", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":12.50} },
+
+  // --- Kebab Combos (includes chips & can of drink) ---
+  { name:"Beef Kebab Combo", description:"Beef kebab roll with chips and a can of drink", category:"Kebab Combos", restaurant:"cappadocia", meal, tags:[], prices:{"":16.50} },
+  { name:"Chicken Kebab Combo", description:"Chicken kebab roll with chips and a can of drink", category:"Kebab Combos", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Chicken Schnitzel Combo", description:"Chicken schnitzel roll with chips and a can of drink", category:"Kebab Combos", restaurant:"cappadocia", meal, tags:[], prices:{"":17.00} },
+  { name:"Mixed Kebab Combo", description:"Mixed kebab roll with chips and a can of drink", category:"Kebab Combos", restaurant:"cappadocia", meal, tags:[], prices:{"":18.00} },
+  { name:"Falafel Kebab Combo", description:"Falafel roll with chips and a can of drink", category:"Kebab Combos", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":16.50} },
+
+  // --- Kebab Packs & Plates ---
+  { name:"Kebab Pack (Chicken, Beef or Mixed)", description:"Kebab meat on chips with salad and sauces", category:"Kebab Packs", restaurant:"cappadocia", meal, tags:[], prices:{"":22.00} },
+  { name:"Kebab Plate", description:"Kebab meat served with rice, salad and sauces", category:"Kebab Packs", restaurant:"cappadocia", meal, tags:[], prices:{"":18.00} },
+
+  // --- Snack Packs ---
+  { name:"Falafel Snack Pack", description:"Falafel on a bed of chips with sauces", category:"Snack Packs", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Chicken Schnitzel Snack Pack", description:"Chicken schnitzel on a bed of chips with sauces", category:"Snack Packs", restaurant:"cappadocia", meal, tags:[], prices:{"":15.00} },
+  { name:"Veggie Patty Snack Pack", description:"Veggie patty on a bed of chips with sauces", category:"Snack Packs", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":15.00} },
+
+  // --- Portugese & Chicken Burgers ---
+  { name:"Portugese Plain Burger", description:"Portugese-style chicken burger", category:"Burgers", restaurant:"cappadocia", meal, tags:[], prices:{"":9.00} },
+  { name:"Portugese The Lot Burger", description:"Portugese chicken burger with the lot", category:"Burgers", restaurant:"cappadocia", meal, tags:[], prices:{"":13.00} },
+  { name:"Chicken Schnitzel Burger", description:"Crumbed chicken schnitzel burger", category:"Burgers", restaurant:"cappadocia", meal, tags:[], prices:{"":12.00} },
+
+  // --- Hamburgers ---
+  { name:"Plain Hamburger", description:"Classic plain hamburger", category:"Burgers", restaurant:"cappadocia", meal, tags:[], prices:{"":8.00} },
+  { name:"Cheese Hamburger", description:"Hamburger with cheese", category:"Burgers", restaurant:"cappadocia", meal, tags:[], prices:{"":9.00} },
+  { name:"Works Hamburger", description:"Hamburger with the lot", category:"Burgers", restaurant:"cappadocia", meal, tags:[], prices:{"":11.00} },
+
+  // --- Vegetarian ---
+  { name:"Veggie Burger", description:"Vegetarian burger patty with salad", category:"Burgers", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Falafel Roll", description:"Falafel with salad in a roll", category:"Burgers", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Salad Roll", description:"Fresh salad roll", category:"Burgers", restaurant:"cappadocia", meal, tags:["vegetarian"], prices:{"":8.00} },
+
+  // --- Chicken ---
+  { name:"Chicken Nuggets & Chips (4pc)", description:"4 chicken nuggets with chips", category:"Chicken", restaurant:"cappadocia", meal, tags:[], prices:{"":8.00} },
+  { name:"Chicken Nuggets & Chips (6pc)", description:"6 chicken nuggets with chips", category:"Chicken", restaurant:"cappadocia", meal, tags:[], prices:{"":10.00} },
+  { name:"Chicken Fingers with Gravy", description:"Chicken fingers served with gravy", category:"Chicken", restaurant:"cappadocia", meal, tags:[], prices:{"":12.00} },
+  ])
+).concat(
+  // === SUSHI REVOLUTION — same menu for lunch & dinner ===
+  ["lunch","dinner"].flatMap(meal => [
+
+  // --- Rolls ---
+  { name:"Vege Tempura Roll", description:"Vege tempura + avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.80} },
+  { name:"Forest Roll", description:"Tempura asparagus + avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":6.80} },
+  { name:"Katsu & Avo Roll", description:"Chicken katsu and avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":4.80} },
+  { name:"Teriyaki Chicken & Avo Roll", description:"Teriyaki chicken and avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":4.80} },
+  { name:"Tuna & Avo Roll", description:"Tuna and avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":4.80} },
+  { name:"Dragon Roll", description:"Fried kingfish inside, topped with avocado, mustard sauce and tobikko", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":5.80} },
+  { name:"Chicken Crunch Roll", description:"Cucumber, katsu", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Prawn & Avo Roll", description:"Prawn and avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Vege Roll", description:"Tofu, avo, carrot, cucumber, lettuce", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.30} },
+  { name:"Avo & Cucumber Roll", description:"Avocado and cucumber", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":4.80} },
+  { name:"Chicken Katsu Roll", description:"Lettuce, katsu", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Teri Chicken Roll", description:"Lettuce, cucumber", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Spicy Prawn Roll", description:"Prawn, cream cheese", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["spicy"], prices:{"":5.80} },
+  { name:"Very Berry Salmon Roll", description:"Strawberry, salmon, cream cheese, avo", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":5.80} },
+  { name:"Seaweed Roll", description:"Cucumber, carrot", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.30} },
+  { name:"Very Berry Tuna Roll", description:"Strawberry, tuna, cream cheese, avo", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":5.80} },
+  { name:"Ocean Roll", description:"Salmon, crab, prawn, egg, lettuce, topped with grilled cheese sauce", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":6.80} },
+  { name:"Baby Cucumber Roll", description:"Baby cucumber roll", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.30} },
+  { name:"Baby Avocado Roll", description:"Baby avocado roll", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.30} },
+  { name:"Tofu & Seaweed Roll", description:"Tofu and seaweed", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.80} },
+  { name:"Sunrise Roll", description:"Cucumber, avo, salmon, prawn", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Spider Roll", description:"Soft shell crab, avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":6.80} },
+  { name:"Baby Tuna Roll", description:"Baby tuna roll", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Baby Salmon Roll", description:"Baby salmon roll", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Cats Roll", description:"Grilled salmon, tuna, avo", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Salmon & Avo Roll", description:"Salmon and avocado", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":4.80} },
+  { name:"Pink Lady Roll", description:"Avo, salmon, onion", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"California Roll", description:"Cucumber, avo, crab", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Spicy Tuna Roll", description:"Spicy tuna roll", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["spicy"], prices:{"":4.80} },
+  { name:"Katsu Cheese Roll", description:"Katsu and cheese", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Tiger Roll", description:"Tiger roll", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Fortune Roll", description:"Inari tofu + pickled radish + cucumber + carrot", category:"Sushi Rolls", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.80} },
+
+  // --- Nigiri ---
+  { name:"Butterfly Nigiri", description:"Butterfly nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":6.80} },
+  { name:"Crab Leg Stick Nigiri", description:"Crab leg stick nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Eel Nigiri", description:"Eel nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":7.30} },
+  { name:"Grilled Mentaiko Prawn Nigiri", description:"Fresh prawn grilled with Japanese chilli powder and house-made mayo sauce", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["spicy","recommended"], prices:{"":5.80} },
+  { name:"Grilled Mushroom Nigiri", description:"Grilled mushroom nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.80} },
+  { name:"Grilled Octopus Nigiri", description:"Grilled octopus nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Grilled Prawn Nigiri", description:"Grilled prawn nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Grilled Scallop Nigiri", description:"Grilled scallop nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":7.30} },
+  { name:"Grilled Shichimi Kingfish Nigiri", description:"Premium kingfish grilled with Japanese chilli powder and house-made mayo sauce", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["spicy","recommended"], prices:{"":6.80} },
+  { name:"Grilled Shichimi Prawn Nigiri", description:"Grilled prawn with shichimi spice", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["spicy"], prices:{"":5.80} },
+  { name:"Grilled Squid Nigiri", description:"Grilled squid nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Inari Nigiri", description:"Sweet tofu pouch nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":4.10} },
+  { name:"Katsu & Avocado Nigiri", description:"Katsu and avocado nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":6.80} },
+  { name:"Prawn Nigiri", description:"Prawn nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Prawn Tempura Nigiri", description:"Prawn tempura nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":6.80} },
+  { name:"Salmon & Avocado Nigiri", description:"Salmon and avocado nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Salmon & Orange Nigiri", description:"Salmon and orange nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":6.80} },
+  { name:"Salmon Nigiri", description:"Salmon nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Shichimi & Tobikko Nigiri", description:"Shichimi spice with tobikko", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["spicy"], prices:{"":6.80} },
+  { name:"Shichimi Salmon Nigiri", description:"Grilled salmon with spicy powder", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["spicy"], prices:{"":5.80} },
+  { name:"Sun Flower Nigiri", description:"Sun flower nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Tuna Nigiri", description:"Tuna nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Veg Tempura Nigiri", description:"Vegetable tempura nigiri", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.80} },
+  { name:"Volcano Nigiri", description:"Grilled salmon, onion, tobiko", category:"Nigiri", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":6.80} },
+
+  // --- Ships & Cupcakes ---
+  { name:"Crab Salad Cupcake", description:"Crab salad cupcake", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:[], prices:{"":7.30} },
+  { name:"Crab Salad Ship", description:"Crab salad ship", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Scallop Cupcake", description:"Scallop cupcake", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:[], prices:{"":8.80} },
+  { name:"Seaweed Cupcake", description:"Seaweed cupcake", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":7.30} },
+  { name:"Seaweed Salad Ship", description:"Seaweed salad ship", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.80} },
+  { name:"Tobikko Cupcake", description:"Tobikko cupcake", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:[], prices:{"":7.30} },
+  { name:"Tobiko Ship", description:"Tobiko ship", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Tuna Ship", description:"Tuna ship", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.30} },
+  { name:"Veg Tempura Basket", description:"Vegetable tempura basket", category:"Ships & Cupcakes", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":6.80} },
+
+  // --- Sashimi ---
+  { name:"Mixed Sashimi (Salmon and Tuna)", description:"Mixed salmon and tuna sashimi", category:"Sashimi", restaurant:"sushi-revolution", meal, tags:["gf"], prices:{"":10.30} },
+  { name:"Kingfish Sashimi", description:"Fresh kingfish sashimi", category:"Sashimi", restaurant:"sushi-revolution", meal, tags:["gf"], prices:{"":10.30} },
+  { name:"Tuna Sashimi", description:"Fresh tuna sashimi", category:"Sashimi", restaurant:"sushi-revolution", meal, tags:["gf"], prices:{"":10.30} },
+  { name:"Salmon Sashimi", description:"Fresh salmon sashimi", category:"Sashimi", restaurant:"sushi-revolution", meal, tags:["gf"], prices:{"":10.30} },
+  { name:"Premium Sashimi", description:"Premium assorted sashimi platter", category:"Sashimi", restaurant:"sushi-revolution", meal, tags:["gf","recommended"], prices:{"":30.50} },
+
+  // --- Fry Menu ---
+  { name:"Vege Spring Roll", description:"Vegetable spring rolls", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":4.80} },
+  { name:"Crab Claw", description:"Fried crab claw", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:[], prices:{"":6.80} },
+  { name:"Prawn Parcel", description:"Fried prawn parcel", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Yakitori Chicken", description:"Japanese grilled chicken skewer", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:[], prices:{"":7.30} },
+  { name:"Takoyaki", description:"Octopus dumpling", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+  { name:"Creamy Potato", description:"Creamy potato croquette", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":5.30} },
+  { name:"Sliced Veg Tempura", description:"Sliced vegetable tempura", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":7.30} },
+  { name:"Calamari Ring", description:"Fried calamari rings", category:"Fry Menu", restaurant:"sushi-revolution", meal, tags:[], prices:{"":5.80} },
+
+  // --- Entree ---
+  { name:"Spicy Yakitori Chicken", description:"Spicy Japanese grilled chicken skewer", category:"Entree", restaurant:"sushi-revolution", meal, tags:["spicy"], prices:{"":7.30} },
+  { name:"Karaage Chicken Entree", description:"Japanese fried chicken", category:"Entree", restaurant:"sushi-revolution", meal, tags:[], prices:{"":12.30} },
+  { name:"Agedashi Tofu", description:"Deep-fried tofu in dashi broth", category:"Entree", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":10.00} },
+  { name:"Prawn Tempura", description:"Lightly battered prawn tempura", category:"Entree", restaurant:"sushi-revolution", meal, tags:[], prices:{"":10.30} },
+  { name:"Seaweed Salad", description:"Japanese seaweed salad", category:"Entree", restaurant:"sushi-revolution", meal, tags:["vegetarian","gf"], prices:{"":6.30} },
+  { name:"Vege Tempura (4pcs)", description:"Asparagus, sweet potato, pumpkin", category:"Entree", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":10.30} },
+  { name:"Steamed Gyoza", description:"Japanese steamed dumplings", category:"Entree", restaurant:"sushi-revolution", meal, tags:[], prices:{"":7.30} },
+  { name:"Edamame (Soy Bean)", description:"Steamed edamame soy beans", category:"Entree", restaurant:"sushi-revolution", meal, tags:["vegetarian","gf"], prices:{"":6.30} },
+  { name:"Mix Tempura", description:"Vege 4pcs + prawn 3pcs", category:"Entree", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+
+  // --- Rice Meals ---
+  { name:"Teriyaki Salmon Meal", description:"Teriyaki salmon with rice and sides", category:"Rice Meals", restaurant:"sushi-revolution", meal, tags:[], prices:{"":18.80} },
+  { name:"Karaage Chicken Meal", description:"Japanese fried chicken with rice and sides", category:"Rice Meals", restaurant:"sushi-revolution", meal, tags:[], prices:{"":18.30} },
+  { name:"Teriyaki Chicken Meal", description:"Teriyaki chicken with rice and sides", category:"Rice Meals", restaurant:"sushi-revolution", meal, tags:[], prices:{"":17.80} },
+  { name:"Chicken Katsu Meal", description:"Chicken katsu with rice and sides", category:"Rice Meals", restaurant:"sushi-revolution", meal, tags:[], prices:{"":18.30} },
+  { name:"Teriyaki Tofu Meal", description:"Teriyaki tofu with rice and sides", category:"Rice Meals", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":17.30} },
+  { name:"Teriyaki Mushroom Rice Meal", description:"Teriyaki mushroom with rice and sides", category:"Rice Meals", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":15.30} },
+
+  // --- Donburi ---
+  { name:"Aburi Salmon Don", description:"Grilled salmon over fluffy rice with fresh vegetables and pickles — smoky, tender, slightly sweet", category:"Donburi", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":19.80} },
+  { name:"Salmon Don", description:"Fresh tender salmon sashimi-style over warm rice with crisp vegetables and pickles", category:"Donburi", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":19.30} },
+  { name:"Unagi (Eel) Don", description:"Grilled eel rice bowl", category:"Donburi", restaurant:"sushi-revolution", meal, tags:[], prices:{"":20.30} },
+  { name:"Seafood Don", description:"Assorted seafood rice bowl", category:"Donburi", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+  { name:"Chicken Katsu Don", description:"Chicken katsu rice bowl with miso soup", category:"Donburi", restaurant:"sushi-revolution", meal, tags:[], prices:{"":18.30} },
+  { name:"King Oyster Mushroom Donburi", description:"King oyster mushroom rice bowl", category:"Donburi", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":15.30} },
+
+  // --- Japanese Curry ---
+  { name:"Panko Prawn Curry Rice Meal", description:"Japanese curry with bread crumb prawns, onions, carrots, potatoes. Comes with rice and miso soup", category:"Japanese Curry", restaurant:"sushi-revolution", meal, tags:[], prices:{"":20.30} },
+  { name:"Karaage Chicken Curry Rice Meal", description:"Japanese curry with karaage chicken, onions, carrots, potatoes. Comes with rice and miso soup", category:"Japanese Curry", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+  { name:"Chicken Katsu Curry Rice Meal", description:"Japanese curry with chicken schnitzel, onions, carrots, potatoes. Comes with rice and miso soup", category:"Japanese Curry", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+  { name:"Plain Curry Rice Meal", description:"Japanese curry with onions, carrots, potatoes. Comes with rice and miso soup", category:"Japanese Curry", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":15.30} },
+  { name:"Vege Tempura Curry Rice Meal", description:"Japanese curry with vege tempura, onions, carrots, potatoes. Comes with rice and miso soup", category:"Japanese Curry", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":20.30} },
+
+  // --- Udon ---
+  { name:"Seafood Udon", description:"Udon noodles with seafood", category:"Udon", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+  { name:"Sliced Vege Tempura Udon", description:"Udon noodles with sliced vegetable tempura", category:"Udon", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":17.30} },
+  { name:"Plain Udon", description:"Plain udon noodle soup", category:"Udon", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":15.30} },
+  { name:"Tempura Udon", description:"Udon noodles with prawn and vege tempura", category:"Udon", restaurant:"sushi-revolution", meal, tags:[], prices:{"":20.30} },
+  { name:"Teriyaki Chicken Udon", description:"Udon noodles with teriyaki chicken", category:"Udon", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+
+  // --- Ramen ---
+  { name:"Katsu Ramen", description:"Three soup flavour selections: Tonkatsu (pork stock), Miso paste, Shoyu", category:"Ramen", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+  { name:"Chasu Ramen", description:"Three soup flavour selections: Tonkatsu (pork stock), Miso paste, Shoyu", category:"Ramen", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.30} },
+  { name:"Seafood Ramen", description:"Three soup flavour selections: Tonkatsu (pork stock), Miso paste, Shoyu", category:"Ramen", restaurant:"sushi-revolution", meal, tags:[], prices:{"":19.80} },
+  { name:"Spicy Miso Ramen", description:"Rich miso broth with chili heat, topped with marinated pork, vegetables, soft-boiled egg and sesame oil", category:"Ramen", restaurant:"sushi-revolution", meal, tags:["spicy","recommended"], prices:{"":19.00} },
+
+  // --- Party Platters ---
+  { name:"Sushi Roll Platter", description:"Variety of large, medium and small rolls", category:"Party Platters", restaurant:"sushi-revolution", meal, tags:[], prices:{"":62.00} },
+  { name:"Hosomaki Platter", description:"Kid-friendly assortment of bite-sized rolls with salmon, tuna, avocado, cucumber and carrot", category:"Party Platters", restaurant:"sushi-revolution", meal, tags:[], prices:{"":48.00} },
+  { name:"Sushi Revolution Platter", description:"Perfect mix of sushi rolls and nigiri", category:"Party Platters", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":76.00} },
+  { name:"Supreme Sushi Platter", description:"Top 10 best-selling sushi creations with chicken and seafood, paired with signature sauces", category:"Party Platters", restaurant:"sushi-revolution", meal, tags:["recommended"], prices:{"":105.00} },
+
+  // --- Extras ---
+  { name:"Miso Soup", description:"Traditional Japanese miso soup", category:"Extras", restaurant:"sushi-revolution", meal, tags:["vegetarian","gf"], prices:{"":3.30} },
+  { name:"Bowl of Rice", description:"Steamed Japanese rice", category:"Extras", restaurant:"sushi-revolution", meal, tags:["vegetarian","gf"], prices:{"":3.30} },
+  { name:"Mayonnaise", description:"Extra mayonnaise", category:"Extras", restaurant:"sushi-revolution", meal, tags:["vegetarian"], prices:{"":0.50} },
+  ])
+).concat(
+  // === IN FORNO — dinner menu (Italian) ===
+  ["lunch","dinner"].flatMap(meal => [
+
+  // --- Entrees & Sides ---
+  { name:"Olives", description:"Warm whole mixed olives (VE)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian","gf"], prices:{"":9.00} },
+  { name:"House-Made Focaccia", description:"House-made focaccia bread served with a garlic butter spread (V)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":11.00} },
+  { name:"Woodfired Sticks", description:"Freshly baked with garlic and herbs, served with your choice of two sauces — Napolitana, Creamy Pesto (N), Black Garlic Aioli (E)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":19.00} },
+  { name:"Crispy Pork Belly", description:"One piece of slow-cooked crispy pork belly served with pickled red cabbage and apple sauce (GF)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["gf"], prices:{"":14.00} },
+  { name:"Pecorino & Mozzarella Arancini", description:"Crispy risotto balls filled with fior di latte and pecorino cheese, and basil pesto aioli (N)(E)(V)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":16.00} },
+  { name:"Fries", description:"Crispy golden fries served with Parmesan cheese and aioli (V)(E)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":16.00} },
+  { name:"Fried Mozzarella", description:"Fried mozzarella cheese served with hot honey sauce and parmesan (E)(V)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Tomato Bruschetta", description:"Toasted sourdough bread served with diced tomatoes, red onion, cucumber, fresh basil and drizzled with balsamic glaze (VE)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":13.00} },
+  { name:"Calamari Fritti", description:"Fried calamari served with black garlic aioli and lemon wedge (E)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:[], prices:{"":19.00} },
+  { name:"Garlic Chilli Prawns", description:"Pan-fried prawns and chorizo cooked with fresh garlic, cherry tomatoes, chilli, parsley, napolitana sauce and served with toasted bread (W)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["spicy","recommended"], prices:{"":25.00} },
+  { name:"Garlic Bread", description:"Toasted bread served with garlic butter (V). Add melted mozzarella +5", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Truffle & Parmesan Fries", description:"Crispy fries served with truffle oil, parmesan cheese and truffle aioli (V)(E)", category:"Entrees & Sides", restaurant:"in-forno", meal, tags:["vegetarian","recommended"], prices:{"":19.00} },
+
+  // --- Salads ---
+  { name:"Rocket & Pear Salad", description:"Fresh rocket leaves with thinly sliced pear, toasted almonds, cherry tomatoes, Parmesan cheese, and a drizzle of balsamic glaze (N)(V)", category:"Salads", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":19.00} },
+  { name:"Caprese Salad", description:"Fresh buffalo mozzarella with sliced Roma tomato, cherry tomato, fresh basil, salt flakes and drizzled with olive oil and balsamic glaze (V)", category:"Salads", restaurant:"in-forno", meal, tags:["vegetarian","gf"], prices:{"":23.00} },
+  { name:"Caesar Salad", description:"Fresh cos lettuce with crispy bacon, toasted croutons, parmesan and anchovy Caesar dressing (E). Add chicken +5, grilled prawns +8, buffalo mozzarella +5, burrata +9", category:"Salads", restaurant:"in-forno", meal, tags:[], prices:{"":19.00} },
+  { name:"Burrata Salad", description:"Fresh creamy burrata served with fresh figs, honey, toasted pistachio crumb and herb oil (N)(V)", category:"Salads", restaurant:"in-forno", meal, tags:["vegetarian","recommended"], prices:{"":26.00} },
+
+  // --- Pastas ---
+  { name:"Lasagna", description:"Layers of pasta sheets baked with bechamel, house-made beef and pork bolognese, basil, mozzarella, and parmesan (W)", category:"Pastas", restaurant:"in-forno", meal, tags:[], prices:{"":26.00} },
+  { name:"Gnocchi Sorrentino", description:"Fresh, house-made potato gnocchi cooked with garlic, mozzarella, napolitana sauce, basil, cherry tomatoes, parsley, and parmesan (E)", category:"Pastas", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":29.00} },
+  { name:"Orecchiette Pesto Chicken", description:"Orecchiette pasta cooked with chicken, fresh garlic, creamy basil pesto sauce, and parmesan cheese (N)", category:"Pastas", restaurant:"in-forno", meal, tags:[], prices:{"":25.00} },
+  { name:"Spaghetti Carbonara", description:"Spaghetti cooked with fresh garlic, crispy bacon, cream, black pepper, and parmesan (W)", category:"Pastas", restaurant:"in-forno", meal, tags:["recommended"], prices:{"":27.00} },
+  { name:"Mafalda Boscaiola", description:"Mafalda pasta tossed with garlic, sauteed mushrooms, crispy bacon, shallots, cream, and parmesan (W)", category:"Pastas", restaurant:"in-forno", meal, tags:[], prices:{"":29.00} },
+  { name:"Pappardella Lamb", description:"Pappardelle pasta layered with garlic, tender slow-braised lamb ragu, parsley, and parmesan (W)", category:"Pastas", restaurant:"in-forno", meal, tags:["recommended"], prices:{"":33.00} },
+  { name:"Orecchiette Alla Norma", description:"Orecchiette pasta tossed with eggplant salsa, garlic, napolitana sauce, topped with creamy ricotta, parmesan, and an eggplant skin crisp (V)", category:"Pastas", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":26.00} },
+  { name:"Spaghetti Bolognese", description:"Spaghetti tossed with garlic, our house-made beef and pork bolognese sauce, and parmesan (W)", category:"Pastas", restaurant:"in-forno", meal, tags:[], prices:{"":26.00} },
+  { name:"Chilli Prawn Linguini", description:"Linguini pasta infused with garlic, fresh prawns, cherry tomatoes, chilli oil, napolitana sauce, cream, and a touch of parsley (W)", category:"Pastas", restaurant:"in-forno", meal, tags:["spicy","recommended"], prices:{"":29.00} },
+
+  // --- Risotto ---
+  { name:"Mushroom & Truffle Risotto", description:"Creamy risotto cooked with sauteed mushrooms, white truffle oil, and parsley, topped with fried enoki mushrooms and a parmesan crisp (W)(V)", category:"Risotto", restaurant:"in-forno", meal, tags:["vegetarian","recommended"], prices:{"":27.00} },
+  { name:"Chicken & Pea Risotto", description:"Creamy arborio risotto cooked with fresh pea puree, garlic, and grilled chicken, garnished with toasted peas and a Parmesan crisp (GF)(W)", category:"Risotto", restaurant:"in-forno", meal, tags:["gf"], prices:{"":26.00} },
+  { name:"Beetroot Risotto", description:"Creamy arborio rice infused with crushed beetroot and finished with a sweet beetroot glaze (GF)(W)(V)", category:"Risotto", restaurant:"in-forno", meal, tags:["vegetarian","gf"], prices:{"":25.00} },
+
+  // --- Pizzas ---
+  { name:"Margherita Pizza", description:"A classic Italian pizza made with tomato pulp, fior di latte cheese, fresh basil and a drizzle of olive oil (V)", category:"Pizzas", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":22.00} },
+  { name:"Hot Honey Salami Pizza", description:"A tomato pulp base, fior di latte, mild salami, whipped ricotta cream, fresh basil and hot honey sauce", category:"Pizzas", restaurant:"in-forno", meal, tags:["spicy","recommended"], prices:{"":27.00} },
+  { name:"Truffle Mushroom Pizza", description:"A garlic base, mozzarella cheese, sauteed mushrooms, caramelised onion and a drizzle of truffle oil (V)", category:"Pizzas", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":25.00} },
+  { name:"Mortadella Pizza", description:"A white base topped with fior di latte, thin slices of premium mortadella, whipped ricotta cream and a sprinkle of toasted pistachio crumb (N)", category:"Pizzas", restaurant:"in-forno", meal, tags:["recommended"], prices:{"":26.00} },
+  { name:"Vegetarian Pizza", description:"A tomato base topped with mozzarella cheese, mushrooms, roasted capsicum, pitted olives, caramelised onion, and semi-dried tomatoes (V)", category:"Pizzas", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":25.00} },
+  { name:"Carne Pizza", description:"A smokey BBQ base topped with mozzarella cheese, mild salami, ham, pepperoni, and Italian pork sausage", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":25.00} },
+  { name:"Capricciosa Pizza", description:"A tomato pulp base, fior di latte, leg ham, mushrooms, pitted olives, artichoke hearts, and fresh basil", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":26.00} },
+  { name:"Potato & Rosemary Pizza", description:"A white garlic base pizza topped with mozzarella cheese, thinly sliced baked potato, rosemary, thyme, and Italian pork sausage", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":26.00} },
+  { name:"Pepperoni Pizza", description:"A tomato pulp base, mozzarella cheese, and generous slices of premium pepperoni", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":26.00} },
+  { name:"Prosciutto Parma Pizza", description:"A tomato pulp base, fior di latte, 18-month aged Prosciutto di Parma, fresh rocket, parmesan balsamic glaze", category:"Pizzas", restaurant:"in-forno", meal, tags:["recommended"], prices:{"":28.00} },
+  { name:"Pollo Pizza", description:"A tomato pulp base topped with mozzarella cheese, roasted chicken, capsicum and caramelised onion", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":28.00} },
+  { name:"Prawn Pizza", description:"A savoury pizza topped with mozzarella cheese, fresh cherry tomato, marinated prawns, black garlic and chilli flakes", category:"Pizzas", restaurant:"in-forno", meal, tags:["spicy"], prices:{"":30.00} },
+  { name:"Lamb Pizza", description:"A tomato pulp base, mozzarella cheese, slow-cooked lamb, caramelised onion and salted tzatziki sauce", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":29.00} },
+  { name:"Ham & Pineapple Pizza", description:"A rich tomato pulp based, mozzarella cheese, leg ham and juicy pineapple chunks", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":25.00} },
+  { name:"Pork Belly Pizza", description:"A tomato pulp base, mozzarella cheese, pork belly, caramelised onion, topped with pickled red cabbage", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":28.00} },
+  { name:"Calabrese Pizza", description:"A tomato base, mozzarella cheese, mild salami, pitted olives, mushrooms, caramelised onion and roasted capsicum", category:"Pizzas", restaurant:"in-forno", meal, tags:[], prices:{"":26.00} },
+
+  // --- Mains (in-store only) ---
+  { name:"Chicken Supreme", description:"Pan-seared tender chicken supreme breast served with creamy garlic mashed potato, buttered greens and creamy green peppercorn sauce (W)(GF)", category:"Mains", restaurant:"in-forno", meal, tags:["gf"], prices:{"":34.00} },
+  { name:"Beef Cheek", description:"Tender braised beef cheek served with creamy garlic mashed potato, buttered greens, and a rich beef jus (W)(GF)", category:"Mains", restaurant:"in-forno", meal, tags:["gf","recommended"], prices:{"":39.00} },
+  { name:"Lamb Shank", description:"Slow-cooked tender lamb shank served with creamy garlic mashed potato, buttered greens, and a rich lamb sauce (W)(GF)", category:"Mains", restaurant:"in-forno", meal, tags:["gf","recommended"], prices:{"":42.00} },
+  { name:"Barramundi", description:"Crispy skin fresh barramundi served with buttered greens, a lemon garlic butter sauce, garnished with crispy sweet potato and a lemon wedge (W)(GF)", category:"Mains", restaurant:"in-forno", meal, tags:["gf"], prices:{"":39.00} },
+
+  // --- Kids Menu ---
+  { name:"Kids Margherita Pizza", description:"Classic pizza with rich tomato pulp, mozzarella, and fior di latte cheese (V)", category:"Kids Menu", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Kids Ham & Pineapple Pizza", description:"Rich tomato pulp, mozzarella cheese, leg ham and juicy pineapple chunks", category:"Kids Menu", restaurant:"in-forno", meal, tags:[], prices:{"":15.00} },
+  { name:"Kids Spaghetti Bolognese", description:"Traditional spaghetti pasta tossed in fragrant garlic and our rich, slow-simmered beef and pork bolognese sauce (W)", category:"Kids Menu", restaurant:"in-forno", meal, tags:[], prices:{"":15.00} },
+  { name:"Kids Gnocchi", description:"Fresh, hand-made potato gnocchi served with napolitana sauce (E)(V)", category:"Kids Menu", restaurant:"in-forno", meal, tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Kids Nuggets & Chips", description:"Golden crispy chips served with tender crispy chicken nuggets and tomato sauce (E)", category:"Kids Menu", restaurant:"in-forno", meal, tags:[], prices:{"":15.00} },
+
+  // --- Desserts ---
+  { name:"Cannoli", description:"Crispy cannoli shells filled with fresh ricotta blended with caramelised pink lady apple and drizzled with caramel sauce (E)", category:"Desserts", restaurant:"in-forno", meal, tags:[], prices:{"":17.00} },
+  { name:"Classic Tiramisu", description:"Layers of savoiardi biscuits dipped in fresh espresso, mascarpone cream, and a dusting of cocoa powder (E)", category:"Desserts", restaurant:"in-forno", meal, tags:["recommended"], prices:{"":16.00} },
+  { name:"Creme Brulee", description:"House-made vanilla custard, lightly baked and topped with a flame-torched crisp of caramelised sugar (E)(GF). In-store only", category:"Desserts", restaurant:"in-forno", meal, tags:["gf"], prices:{"":17.00} },
+  { name:"Strawberry Tiramisu", description:"Layers of savoiardi biscuits dipped in strawberry puree, strawberry mascarpone cream, and fresh strawberries (E)", category:"Desserts", restaurant:"in-forno", meal, tags:[], prices:{"":17.00} },
+  { name:"Nutella Puffs", description:"Deep-fried pizza puffs tossed in cinnamon sugar, served with Nutella and vanilla ice cream (N)", category:"Desserts", restaurant:"in-forno", meal, tags:[], prices:{"":16.00} },
+  { name:"Coconut Mango Panna Cotta", description:"Silky coconut panna cotta served with mango puree, fresh strawberries, coconut flakes and a drizzle of strawberry coulis (VE)(GF)", category:"Desserts", restaurant:"in-forno", meal, tags:["vegetarian","gf"], prices:{"":19.00} },
+  ])
+).concat(
+  // === RAJ'S CORNER — same menu for lunch & dinner ===
+  ["lunch","dinner"].flatMap(meal => [
+
+  // --- Combos ---
+  { name:"Vegetarian Combo", description:"Choose up to 3 different vegetarian curries, served on rice or without rice. More curry if no rice", category:"Combos", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"":8.90} },
+  { name:"Meat & Vegetarian Combo", description:"Choose up to 3 different curries, served on rice or without rice. More curry if no rice", category:"Combos", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"":9.90} },
+  { name:"Vegan Combo", description:"Choose up to 3 different vegan curries, served on rice or without rice. More curry if no rice", category:"Combos", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"":8.90} },
+  { name:"Sauce Only", description:"Choose any curry sauce without meat, served on rice or without rice", category:"Combos", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":6.00} },
+
+  // --- Entrees ---
+  { name:"Vegetable Samosa", description:"Indian vegetarian pie, stuffed with flavorful potatoes and peas (NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":3.50} },
+  { name:"Meat Samosa", description:"Indian meat pie, stuffed with potatoes and chicken mince (NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:[], prices:{"":3.80} },
+  { name:"Vegetable Pakora (3 pcs)", description:"Mixed vegetables with Indian herbs and spices (V)(DF)(GF)(NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"":5.00} },
+  { name:"Vegetarian Spring Roll", description:"Flaky crisp pastry filled with lightly seasoned vegetables (NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":2.50} },
+  { name:"Eggplant Pakora (3 pcs)", description:"Fritters of sliced eggplant coated in gram flour flavored with spices and herbs (GF)(V)(DF)(NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"":5.00} },
+  { name:"Onion Bhajee", description:"Vegan crispy fritters made with finely sliced onions coated with gram flour, spices and herbs (V)(DF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":3.50} },
+  { name:"Chicken Tikka (Boneless)", description:"Boneless thigh fillets marinated in traditional spices & yogurt (GF)(NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"":4.20} },
+  { name:"Spicy Potato", description:"Round shaped spiced mashed potato covered with gram flour (GF)(V)(DF)(NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"":3.50} },
+  { name:"Chicken Nibbles", description:"Lightly fried crumbed drumette and wingette", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:[], prices:{"":2.50} },
+  { name:"Chicken Pakora", description:"Juicy boneless chicken garlic balls", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:[], prices:{"":1.50} },
+  { name:"Tandoori Chicken", description:"Breast and leg pieces of boned chicken marinated in traditional spices & yoghurt (GF)(NF)", category:"Indian Entrees", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"":4.20} },
+
+  // --- Mains - Vegetable ---
+  { name:"Vegetables Korma", description:"Mild — Seasonal vegetables cooked in a creamy sauce with selected blend of herbs and spices (GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Aloo Matar Paneer", description:"Med Hot — Potatoes, peas and cottage cheese simmered with selectively spiced tangy tomato gravy (GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Daal Tadka", description:"Mild — Lentils smoked with butter and Indian spice confinements (GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"White Cholay", description:"Medium Hot — White chickpeas cooked with whole bunch of Indian spices (V)(DF)(GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Palak Paneer", description:"Med Hot — Fresh cottage cheese cooked along with smooth and creamy spinach (GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Eggplant & Potato", description:"Medium Hot — Vegan curry made with potatoes and pan-fried eggplant in a subtly spiced tomato gravy (V)(DF)(GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Mixed Vegetables", description:"Mild — Delicious vegan healthy curry loaded with perfectly spiced seasonal vegetables (V)(DF)(GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Aloo Gobhi", description:"Med Hot — Potatoes and cauliflower cooked with onion, tomato and spices (GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"Small":9.90,"Large":15.90} },
+  { name:"Rajma Curry", description:"Med Hot — Luscious gravy made with kidney beans cooked with onions, tomatoes and spices (GF)(NF)", category:"Vegetable Curries", restaurant:"rajs-corner", meal, tags:["vegetarian","gf","spicy"], prices:{"Small":9.90,"Large":15.90} },
+
+  // --- Mains - Chicken ---
+  { name:"Butter Chicken", description:"Mild — Most famous North Indian dish made with tender chicken and creamy tomato gravy (GF)(NF)", category:"Chicken Curries", restaurant:"rajs-corner", meal, tags:["gf","recommended"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Chicken Korma", description:"Mild — Rich and mildly spiced creamy chicken dish in a flavorful sauce (GF)(NF)", category:"Chicken Curries", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Mango Chicken", description:"Mild — Boneless chicken simmered in a sweet and freshly prepared creamy mango sauce (GF)(NF)", category:"Chicken Curries", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Chicken Tikka Masala", description:"Med Hot — Tandoori chicken cooked with ground spices, onions, tomatoes, cream and bell pepper (GF)(NF)", category:"Chicken Curries", restaurant:"rajs-corner", meal, tags:["gf","spicy","recommended"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Chicken Curry", description:"Medium Hot — Chicken stewed in an onion and tomato-based sauce flavored with basic ground spices (DF)(GF)(NF)", category:"Chicken Curries", restaurant:"rajs-corner", meal, tags:["gf","spicy"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Kadai Chicken", description:"Med Hot — Karahi chicken prepared with onions, capsicums, coriander seeds and spices in an iron wok (GF)(NF)", category:"Chicken Curries", restaurant:"rajs-corner", meal, tags:["gf","spicy"], prices:{"Small":10.90,"Large":18.90} },
+
+  // --- Mains - Lamb ---
+  { name:"Lamb Korma", description:"Mild — Lamb cooked in a rich and mildly spiced creamy sauce (GF)(NF)", category:"Lamb Curries", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Lamb Madras", description:"Medium Hot — Lamb cooked in a rich and intense sauce made of coconut milk and aromatic Indian condiments (DF)(GF)(NF)", category:"Lamb Curries", restaurant:"rajs-corner", meal, tags:["gf","spicy"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Lamb Rogan Josh", description:"Mild — A rich, highly spiced lamb dish cooked with special herbs, onions & tomatoes (DF)(GF)(NF)", category:"Lamb Curries", restaurant:"rajs-corner", meal, tags:["gf","recommended"], prices:{"Small":10.90,"Large":18.90} },
+
+  // --- Mains - Beef ---
+  { name:"Beef Vindaloo", description:"Hot — Beef cooked with hot spices and chillies (DF)(GF)(NF)", category:"Beef Curries", restaurant:"rajs-corner", meal, tags:["gf","spicy"], prices:{"Small":10.90,"Large":18.90} },
+  { name:"Beef Korma", description:"Mild — Beef cooked in a rich and mildly spiced creamy sauce (GF)(NF)", category:"Beef Curries", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"Small":10.90,"Large":18.90} },
+
+  // --- Mains - Seafood ---
+  { name:"Fish Curry", description:"Med Hot — Boneless fish pieces cooked with coconut cream, herbs and spices (NF)", category:"Seafood Curries", restaurant:"rajs-corner", meal, tags:["spicy"], prices:{"Small":10.90,"Large":18.90} },
+
+  // --- Special Dishes ---
+  { name:"Tandoori Wrap", description:"Boneless chicken, salad, rice and mint sauce wrapped in naan bread and curry sauce of your choice", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:[], prices:{"":12.90} },
+  { name:"Plain Dosa", description:"Indian crepe served with coconut chutney, mint chutney, tamarind sauce and sambhar", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":10.90} },
+  { name:"Masala Dosa", description:"Indian crepe filled with potato, peas, onions served with coconut chutney, mint chutney, tamarind sauce and sambhar", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian","recommended"], prices:{"":13.90} },
+  { name:"Chana Bhatura", description:"Lightly fried naan bread served with chickpeas, onions, yoghurt and pickles", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":15.90} },
+  { name:"Samosa Chaat", description:"Smashed vegetable samosas layered with chickpeas, salad, sev, yoghurt, tamarind and mint sauce", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":14.90} },
+  { name:"Pani Puri", description:"Round fried hollow crisps filled with a flavoured water mixture", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":9.90} },
+  { name:"Utthapam", description:"Rice and lentil base topped with onion, tomatoes, capsicum and chilli served with chutneys and sambhar", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":14.90} },
+  { name:"Idli Sambar", description:"Steamed rice and black lentil cakes served with coconut chutney, mint chutney, tamarind sauce and sambhar", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":11.90} },
+  { name:"Paneer Dosa", description:"Indian crepe filled with cheese served with coconut chutney, mint chutney, tamarind sauce and sambhar", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":14.90} },
+  { name:"Chicken Dosa", description:"Indian crepe filled with tandoori chicken served with coconut chutney, mint chutney, tamarind sauce and sambhar", category:"Special Dishes", restaurant:"rajs-corner", meal, tags:[], prices:{"":14.90} },
+
+  // --- Rice & Biryani ---
+  { name:"Basmati Rice", description:"Steamed basmati rice", category:"Rice & Biryani", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":4.50,"Large":7.00} },
+  { name:"Chicken Biryani", description:"Delicious savoury rice loaded with chicken chunks, caramelized onions, served with yoghurt and salad", category:"Rice & Biryani", restaurant:"rajs-corner", meal, tags:["gf","recommended"], prices:{"":16.90} },
+  { name:"Lamb Biryani", description:"Aromatic basmati rice layered over tendered pieces of lamb, spices and caramelized onions, served with yoghurt and salad", category:"Rice & Biryani", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"":16.90} },
+  { name:"Vegetable Biryani", description:"Flavourful rice dish made with basmati rice, mixed vegetables and Indian inspired spices served with yoghurt and salad", category:"Rice & Biryani", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"":16.90} },
+  { name:"Beef Biryani", description:"Aromatic basmati rice layered over tendered pieces of beef, smoked spices and caramelized onions, served with yoghurt and salad", category:"Rice & Biryani", restaurant:"rajs-corner", meal, tags:["gf"], prices:{"":16.90} },
+
+  // --- Breads ---
+  { name:"Plain Naan", description:"Soft, pillowy flatbread baked in Tandoor", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":3.50} },
+  { name:"Garlic Naan", description:"Soft, fluffy bread with a touch of garlic and coriander", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":4.00} },
+  { name:"Cheese Naan", description:"Soft and delicious cheese stuffed bread", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":5.00} },
+  { name:"Combination Naan", description:"Perfect combo of tasty cheese and garlic", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":5.50} },
+  { name:"Tandoori Roti", description:"Delightful light bread made from premium whole meal flour", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":3.50} },
+  { name:"Aloo Paratha", description:"Indian traditional flatbread stuffed with spiced mashed potatoes", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":4.50} },
+  { name:"Peshwari Naan", description:"Classic sweet bread filled with a mixture of desiccated coconut and mixed dry fruits", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":5.50} },
+  { name:"Sweet Chilli Cheese Naan", description:"Soft naan bread loaded with grated cheese and subtleness of sweet chilli sauce", category:"Breads", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":5.50} },
+  { name:"Chicken Naan", description:"Minced flavoured chicken stuffed in a soft bread cooked with a touch of butter", category:"Breads", restaurant:"rajs-corner", meal, tags:[], prices:{"":5.00} },
+
+  // --- Side Dishes ---
+  { name:"Pappadums (4)", description:"Thin Indian wafer prepared with lentils, extremely crunchy", category:"Indian Sides", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"":3.00} },
+  { name:"Raita", description:"Made with yoghurt & fresh cucumbers", category:"Indian Sides", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":4.00,"Large":5.50} },
+  { name:"Mint Sauce", description:"Made with yoghurt and fresh mint leaves", category:"Indian Sides", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":4.00,"Large":5.50} },
+  { name:"Salad", description:"Fresh cucumber, tomato & onions", category:"Indian Sides", restaurant:"rajs-corner", meal, tags:["vegetarian","gf"], prices:{"Small":5.50,"Large":7.50} },
+
+  // --- Indian Sweets (per piece) ---
+  { name:"Gulab Jamun", description:"Classic Indian sweet — soft milk-solid balls soaked in sugar syrup", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"1pc":2.80} },
+  { name:"Rasmalai", description:"Soft paneer discs soaked in sweet, creamy milk", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"1pc":3.00} },
+  { name:"Jalebi", description:"Deep-fried spirals soaked in sugar syrup", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"500g":15.00} },
+  { name:"Kaju Katli", description:"Diamond-shaped cashew fudge", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"250g":11.00} },
+  { name:"Rasgulla", description:"Soft, spongy cottage cheese balls in sugar syrup", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"1pc":2.80} },
+  { name:"Kaju Choco Roll", description:"Cashew and chocolate roll", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"1pc":2.50} },
+  { name:"Besan Laddu", description:"Sweet balls made from gram flour, ghee and sugar", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"1pc":2.80} },
+  { name:"Mixed Box of Sweets", description:"Assorted selection of Indian sweets", category:"Indian Sweets", restaurant:"rajs-corner", meal, tags:["vegetarian","recommended"], prices:{"500g":16.50,"1kg":30.00} },
+
+  // --- Beverages ---
+  { name:"Mango Lassi", description:"Refreshing Indian drink made from mango, yoghurt and milk", category:"Beverages", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":4.90} },
+  { name:"Plain Lassi", description:"Refreshing Indian drink made from yoghurt and milk", category:"Beverages", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":4.90} },
+  { name:"Rose Lassi", description:"Refreshing Indian drink made from yoghurt, milk, rose syrup and rose petals", category:"Beverages", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":4.90} },
+  { name:"Masala Tea / Chai", description:"Traditional Indian spiced tea", category:"Beverages", restaurant:"rajs-corner", meal, tags:["vegetarian"], prices:{"":4.00} },
+  ])
+)
+
+// ═══════════════════════════════════════════
+//  SON OF A GUN — Australian
+// ═══════════════════════════════════════════
+
+// All Day menu (5:30am–4pm) → lunch
+.concat([
+  // --- Breakfast ---
+  { name:"Croissant", description:"Classic French croissant", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":6.00} },
+  { name:"Pain au Chocolat", description:"Chocolate-filled pastry", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":8.00} },
+  { name:"Muffin", description:"Freshly baked muffin", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":6.00} },
+  { name:"Banana Bread / Pumpkin Bread", description:"House-baked banana or pumpkin bread", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Sourdough Fruit Toast", description:"Thick-cut sourdough fruit toast", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":9.00} },
+  { name:"Raisin Toast", description:"Classic raisin toast", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":8.00} },
+  { name:"Ham Cheese Tomato Toastie", description:"Toasted sandwich with ham, cheese and tomato", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":12.00} },
+  { name:"Granola", description:"House granola with yoghurt and fresh fruit", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Eggs Benny", description:"Poached eggs on English muffin with hollandaise", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":22.00} },
+  { name:"Bacon & Egg Roll", description:"Crispy bacon and fried egg on a soft roll", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":12.00} },
+  { name:"Campfire Brekkie", description:"Full cooked breakfast with eggs, bacon, sausage, toast and sides", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":26.00} },
+  { name:"Salsa Sunrise Burrito", description:"Breakfast burrito with eggs, salsa, cheese and fillings", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":20.00} },
+  { name:"Corned Beef Hash", description:"House-made corned beef hash with eggs", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":22.00} },
+  { name:"Pancakes", description:"Fluffy pancakes with toppings", category:"Breakfast", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":22.00} },
+
+  // --- Share Plates (lunch) ---
+  { name:"Poutine", description:"Fries, cheese curds and gravy", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":14.00} },
+  { name:"Cornbread", description:"Southern-style cornbread", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Cheese & Garlic Sourdough", description:"Toasted sourdough with cheese and garlic butter", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":13.00} },
+  { name:"Soup of the Day", description:"Ask your server for today's soup", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":15.00} },
+  { name:"Buffalo Cauliflower Bites", description:"Crispy cauliflower bites with buffalo sauce", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian","spicy"], prices:{"":14.00} },
+  { name:"Chips", description:"Seasoned fries", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian","gf"], prices:{"":10.00} },
+  { name:"Mozzarella Sticks", description:"Crumbed mozzarella sticks with dipping sauce", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":14.00} },
+  { name:"Chicken Wings", description:"Crispy chicken wings with sauce", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["gf"], prices:{"":14.00} },
+  { name:"Onion Rings", description:"Beer-battered onion rings", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":12.00} },
+  { name:"Jalapeño Poppers", description:"Stuffed jalapeños, crumbed and fried", category:"Share Plates", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian","spicy"], prices:{"":15.00} },
+
+  // --- Burgers (lunch) ---
+  { name:"Cheeseburger", description:"Classic beef cheeseburger", category:"Burgers", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":18.00} },
+  { name:"Southern Fried Chicken Burger", description:"Crispy fried chicken burger", category:"Burgers", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":20.00} },
+  { name:"Blue Cheese Burger", description:"Beef burger with blue cheese", category:"Burgers", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":20.00} },
+  { name:"Double Eggplant Burger", description:"Plant-based burger with double eggplant patty", category:"Burgers", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":20.00} },
+
+  // --- Bowls (lunch) ---
+  { name:"Nourish Bowl", description:"Healthy bowl with fresh vegetables and grains", category:"Bowls", restaurant:"son-of-a-gun", meal:"lunch", tags:["vegetarian"], prices:{"":23.00} },
+  { name:"Lamb Athena Bowl", description:"Greek-inspired lamb bowl", category:"Bowls", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":28.00} },
+  { name:"Prawn Burrito Bowl", description:"Prawn burrito bowl with rice and fresh toppings", category:"Bowls", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":28.00} },
+  { name:"Smoked Brisket Bowl", description:"Slow-smoked brisket bowl", category:"Bowls", restaurant:"son-of-a-gun", meal:"lunch", tags:[], prices:{"":28.00} },
+])
+
+// Dinner menu (4pm–midnight) → dinner
+.concat([
+  // --- Share Plates (dinner) ---
+  { name:"Poutine", description:"Fries, cheese curds and gravy", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":14.00} },
+  { name:"Cornbread", description:"Southern-style cornbread", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Cheese & Garlic Sourdough", description:"Toasted sourdough with cheese and garlic butter", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":13.00} },
+  { name:"Soup of the Day", description:"Ask your server for today's soup", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":15.00} },
+  { name:"Buffalo Cauliflower Bites", description:"Crispy cauliflower bites with buffalo sauce", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian","spicy"], prices:{"":14.00} },
+  { name:"Chips", description:"Seasoned fries", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian","gf"], prices:{"":10.00} },
+  { name:"Mozzarella Sticks", description:"Crumbed mozzarella sticks with dipping sauce", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":14.00} },
+  { name:"Chicken Wings", description:"Crispy chicken wings with sauce", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["gf"], prices:{"":14.00} },
+  { name:"Onion Rings", description:"Beer-battered onion rings", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":12.00} },
+  { name:"Jalapeño Poppers", description:"Stuffed jalapeños, crumbed and fried", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian","spicy"], prices:{"":15.00} },
+  { name:"Pork Belly Bites", description:"Crispy pork belly bites", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["gf"], prices:{"":19.00} },
+  { name:"Mushroom Quesadilla", description:"Cheese and mushroom quesadilla", category:"Share Plates", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":18.00} },
+
+  // --- Burgers (dinner) ---
+  { name:"Cheeseburger", description:"Classic beef cheeseburger", category:"Burgers", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":18.00} },
+  { name:"Southern Fried Chicken Burger", description:"Crispy fried chicken burger", category:"Burgers", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":20.00} },
+  { name:"Blue Cheese Burger", description:"Beef burger with blue cheese", category:"Burgers", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":20.00} },
+  { name:"Double Eggplant Burger", description:"Plant-based burger with double eggplant patty", category:"Burgers", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":20.00} },
+  { name:"Dirty Bird Burger", description:"Loaded fried chicken burger", category:"Burgers", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":21.00} },
+
+  // --- Loaded Fries ---
+  { name:"West Virginia Loaded Fries", description:"Loaded fries West Virginia style", category:"Loaded Fries", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":24.00} },
+  { name:"Louisiana Loaded Fries", description:"Cajun-spiced loaded fries", category:"Loaded Fries", restaurant:"son-of-a-gun", meal:"dinner", tags:["spicy"], prices:{"":25.00} },
+  { name:"Quebec Loaded Fries", description:"Poutine-style loaded fries", category:"Loaded Fries", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":24.00} },
+  { name:"Oregon Loaded Fries", description:"Oregon-style loaded fries", category:"Loaded Fries", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":22.00} },
+
+  // --- Tacos ---
+  { name:"Charred Prawns Tacos", description:"Tacos with charred prawns", category:"Tacos", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":28.00} },
+  { name:"Haloumi Tacos", description:"Tacos with crispy haloumi", category:"Tacos", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":25.00} },
+  { name:"Chicken Breast Tacos", description:"Tacos with seasoned chicken breast", category:"Tacos", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":25.00} },
+  { name:"Lamb Barbacoa Tacos", description:"Tacos with slow-cooked lamb barbacoa", category:"Tacos", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":28.00} },
+
+  // --- Bowls (dinner) ---
+  { name:"Nourish Bowl", description:"Healthy bowl with fresh vegetables and grains", category:"Bowls", restaurant:"son-of-a-gun", meal:"dinner", tags:["vegetarian"], prices:{"":23.00} },
+  { name:"Lamb Barbacoa Bowl", description:"Slow-cooked lamb barbacoa bowl", category:"Bowls", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":28.00} },
+  { name:"Prawn Burrito Bowl", description:"Prawn burrito bowl with rice and fresh toppings", category:"Bowls", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":28.00} },
+  { name:"Smoked Brisket Bowl", description:"Slow-smoked brisket bowl", category:"Bowls", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":28.00} },
+  { name:"Smoked Chorizo & Chicken Bowl", description:"Bowl with smoked chorizo and chicken", category:"Bowls", restaurant:"son-of-a-gun", meal:"dinner", tags:[], prices:{"":28.00} },
+
+  // --- Smokehouse ---
+  { name:"Smokehouse Platter", description:"Selection of house-smoked meats with sides", category:"Smokehouse", restaurant:"son-of-a-gun", meal:"dinner", tags:["gf","recommended"], prices:{"1 Person":40.00,"4 People":140.00} },
+])
+
+// Desserts & Kids — both meals
+.concat(
+  ["lunch","dinner"].flatMap(meal => [
+  // --- Desserts ---
+  { name:"Chocolate Torte", description:"Rich chocolate torte (Vegan)", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":16.00} },
+  { name:"Baked NY Cheesecake", description:"Classic New York baked cheesecake", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Strawberry & Rhubarb Crumble", description:"Warm strawberry and rhubarb crumble", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian","gf"], prices:{"":16.00} },
+  { name:"Sticky Date Pudding", description:"Warm sticky date pudding with butterscotch sauce", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian","gf"], prices:{"":16.00} },
+  { name:"Brownie Tasting Board for 2", description:"Selection of house-made brownies", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":19.00} },
+  { name:"Churros Tasting for 2", description:"Freshly fried churros with dipping sauces", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":17.00} },
+  { name:"Tiramisu", description:"Classic Italian tiramisu", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":15.00} },
+  { name:"Vegan Sampler for 2", description:"Selection of vegan desserts", category:"Desserts", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":20.00} },
+
+  // --- Kids Menu ---
+  { name:"Kids Chicken Nuggets & Chips", description:"Chicken nuggets with chips, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Grilled Chicken Burger", description:"Grilled chicken burger with chips, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Cheeseburger", description:"Mini cheeseburger with chips, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Chicken Taco", description:"Chicken taco, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Spaghetti Napoli", description:"Spaghetti with napoli sauce, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":12.00} },
+  { name:"Kids Ham & Cheese Wrap", description:"Ham and cheese wrap, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Ham & Cheese Toastie", description:"Ham and cheese toastie, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Bacon & Egg Roll", description:"Bacon and egg roll, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:[], prices:{"":12.00} },
+  { name:"Kids Fairy Bread Pancakes", description:"Fairy bread pancakes, includes sundae", category:"Kids Menu", restaurant:"son-of-a-gun", meal, tags:["vegetarian"], prices:{"":12.00} },
+  ])
+)
+
+// ═══════════════════════════════════════════
+//  GUZMAN Y GOMEZ — Mexican
+// ═══════════════════════════════════════════
+
+.concat(
+  ["lunch","dinner"].flatMap(meal => [
+  // --- Burritos & Bowls ---
+  { name:"Burrito", description:"Rice, jack cheese, refried beans, Pico de Gallo, tomatillo and filling rolled in a flour tortilla. +$1 for brisket", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":9.90,"Regular":14.20} },
+  { name:"Bowl", description:"Rice, jack cheese, refried beans, Pico de Gallo, tomatillo and filling served with corn chips. +$1 for brisket", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":9.90,"Regular":14.20} },
+  { name:"Cali Burrito", description:"Chipotle-seasoned fries, jack cheese, Pico de Gallo, tomatillo and filling. Also available as Crispy Chicken Tender Cali Burrito. +$1 for brisket", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":9.90,"Regular":14.20} },
+  { name:"Enchilada", description:"Grilled tortilla filled with rice and Pico de Gallo, tomatillo, melted jack cheese, sour cream and corn chips. +$1 for brisket", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":12.00,"Regular":17.70} },
+  { name:"Caesar Cali Burrito", description:"Cos lettuce, crushed corn chips, caesar dressing. Available with Grilled Chicken, Crispy Chicken Tenders or Pulled Shiitake Mushroom", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":11.60,"Regular":15.30} },
+  { name:"Caesar Burrito", description:"Cos lettuce, crushed corn chips, jack cheese, caesar dressing. Available with Grilled Chicken, Crispy Chicken Tenders or Pulled Shiitake Mushroom", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":10.60,"Regular":14.00} },
+  { name:"Quesadilla", description:"Jack cheese and filling toasted in a flour tortilla. Choose your filling", category:"Burritos & Bowls", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"":11.40} },
+
+  // --- Tacos ---
+  { name:"Tacos", description:"Jack cheese, iceberg lettuce, Pico de Gallo, tomatillo and filling in a crunchy corn or soft flour tortilla. +50c for brisket", category:"Tacos", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"1 Taco":5.60,"2 Tacos":10.70,"3 Tacos":15.80} },
+  { name:"Crispy Chicken Tender Taco", description:"Crispy chicken tender, iceberg lettuce, jack cheese, Pico de Gallo, chipotle mayo in a crunchy corn or soft flour tortilla", category:"Tacos", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"1 Taco":5.80,"2 Tacos":11.20,"3 Tacos":15.80} },
+  { name:"$3 Taco", description:"Filling, iceberg lettuce and jack cheese in a chipotle-seasoned hard corn tortilla", category:"Tacos", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"":3.00} },
+
+  // --- Nachos & Loaded Fries ---
+  { name:"Nachos", description:"GYG corn chips, melted jack cheese, sour cream, guacamole and filling", category:"Nachos & Loaded Fries", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":11.20,"Regular":14.20} },
+  { name:"Nacho Fries", description:"Chipotle-seasoned fries, melted jack cheese, Pico de Gallo, tomatillo, sour cream, guacamole and filling", category:"Nachos & Loaded Fries", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":11.20,"Regular":13.90} },
+
+  // --- Salads ---
+  { name:"Caesar Salad", description:"Cos lettuce, crushed corn chips, jack cheese, caesar dressing. Available with Grilled Chicken, Crispy Chicken Tenders or Pulled Shiitake Mushroom", category:"Salads", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"Mini":11.50,"Regular":14.70} },
+
+  // --- Snacks ---
+  { name:"Crispy Chicken Tenders", description:"Crispy chicken tenders", category:"Snacks", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"3pc":7.30,"5pc":10.40,"10pc":15.30} },
+  { name:"Crispy Chicken Tenders & Fries", description:"Crispy chicken tenders served with fries", category:"Snacks", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"3pc":10.40,"5pc":13.50} },
+  { name:"Street Corn", description:"Mexican-style chargrilled street corn", category:"Snacks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":7.50} },
+  { name:"Fries", description:"Seasoned fries", category:"Snacks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"Med":5.50,"Lrg":7.50} },
+  { name:"Corn Chips", description:"GYG corn chips", category:"Snacks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"Med":5.20,"Lrg":6.80} },
+  { name:"Cheese Fries", description:"Seasoned fries with melted cheese", category:"Snacks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"Med":6.20,"Lrg":8.50} },
+
+  // --- Sweet ---
+  { name:"Soft Serve Cone", description:"Soft serve ice cream cone", category:"Sweet", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":2.00} },
+  { name:"Churros", description:"Freshly made churros", category:"Sweet", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":5.50} },
+  { name:"GYG Sundae", description:"Soft serve sundae with toppings", category:"Sweet", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":5.50} },
+  { name:"Churro Burrito", description:"Churro wrapped burrito-style with sweet fillings", category:"Sweet", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":7.00} },
+
+  // --- Kids Menu ---
+  { name:"Little G's Meal", description:"Choice of burrito or 2 tacos, served with apple juice (250ml) or kids frozen (330ml) and water", category:"Kids Menu", restaurant:"guzman-y-gomez", meal, tags:[], prices:{"":11.50} },
+
+  // --- Drinks ---
+  { name:"Soft Drink", description:"Soft drink", category:"Drinks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"390ml":4.00,"600ml":5.40} },
+  { name:"Water", description:"Bottled water", category:"Drinks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":4.00} },
+  { name:"Sparkling Water", description:"Sparkling water", category:"Drinks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":4.10} },
+  { name:"Juice / Iced Tea", description:"Juice or iced tea", category:"Drinks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"":5.00} },
+  { name:"Coffee", description:"Barista-made coffee — hot beverages with any milk may contain milk, soy, almond and gluten", category:"Drinks", restaurant:"guzman-y-gomez", meal, tags:["vegetarian"], prices:{"Med":4.50,"Lrg":5.50} },
+  ])
+);
+
+// Restaurant display names
+const restaurantNames = {
+  "the-grain": "The Grain",
+  "eight-buns": "Eight Buns",
+  "cappadocia": "Cappadocia",
+  "sushi-revolution": "Sushi Revolution",
+  "in-forno": "In Forno",
+  "rajs-corner": "Raj's Corner",
+  "son-of-a-gun": "Son Of A Gun",
+  "guzman-y-gomez": "Guzman Y Gomez"
+};
+
+// Read restaurant from URL param
+const urlParams = new URLSearchParams(window.location.search);
+const urlRestaurant = urlParams.get("restaurant") || "all";
+
+// Update page title if single restaurant
+const pageTitle = document.getElementById("pageTitle");
+const pageSub = document.getElementById("pageSubtitle");
+if (urlRestaurant !== "all" && restaurantNames[urlRestaurant]) {
+  pageTitle.textContent = restaurantNames[urlRestaurant];
+  pageSub.textContent = "Search and filter the menu";
+}
+
+// State
+let activeMeal = "lunch";
+let activeRestaurant = urlRestaurant;
+let searchQuery = "";
+let activeFilters = new Set();
+let showPrices = false;
+
+// DOM
+const grid = document.getElementById("menuGrid");
+const info = document.getElementById("resultsInfo");
+const searchInput = document.getElementById("searchInput");
+const restaurantSelect = document.getElementById("restaurantFilter");
+const priceToggle = document.getElementById("priceToggle");
+
+// Sync dropdown with URL param
+restaurantSelect.value = urlRestaurant;
+
+// Render
+function render() {
+  let items = menuData.filter(item => {
+    if (item.meal !== activeMeal) return false;
+    if (activeRestaurant !== "all" && item.restaurant !== activeRestaurant) return false;
+    if (activeFilters.has("gf") && !item.tags.includes("gf")) return false;
+    if (activeFilters.has("spicy") && !item.tags.includes("spicy")) return false;
+    if (activeFilters.has("vegetarian") && !item.tags.includes("vegetarian")) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const haystack = (item.name + " " + item.description + " " + item.category).toLowerCase();
+      // Support multiple search terms (all must match)
+      const terms = q.split(/\s+/).filter(Boolean);
+      if (!terms.every(t => haystack.includes(t))) return false;
+    }
+    return true;
+  });
+
+  // Group by category
+  const grouped = {};
+  const categoryOrder = [
+    "Entrees & Sides", "Salads", "Pizzas", "Pastas", "Risotto", "Mains", "Kids Menu", "Desserts",
+    "Sushi Rolls", "Nigiri", "Ships & Cupcakes", "Sashimi", "Fry Menu", "Entree",
+    "Rice Meals", "Donburi", "Japanese Curry", "Udon", "Ramen", "Party Platters",
+    "Pides", "Kebab Rolls", "Kebab Combos", "Kebab Packs", "Snack Packs", "Burgers",
+    "Buns & Dumplings", "Roti", "Cold Dish & Sizzling", "Snacks (Must Try)",
+    "Noodles", "Fried Rices", "Fried Rice", "Stir Fry", "Curry",
+    "Chicken", "Beef", "Pork", "Fish", "Seafood", "Tofu",
+    "Omelette & Vegetable", "Soups & Desserts", "Sides", "Extras",
+    "Combos", "Indian Entrees", "Chicken Curries", "Lamb Curries", "Beef Curries",
+    "Seafood Curries", "Vegetable Curries", "Special Dishes", "Rice & Biryani",
+    "Breads", "Indian Sides", "Indian Sweets", "Beverages",
+    "Breakfast", "Share Plates", "Loaded Fries", "Tacos", "Bowls", "Smokehouse",
+    "Burritos & Bowls", "Nachos & Loaded Fries", "Snacks", "Sweet", "Drinks"
+  ];
+  items.forEach(item => {
+    if (!grouped[item.category]) grouped[item.category] = [];
+    grouped[item.category].push(item);
+  });
+
+  info.textContent = `Showing ${items.length} dish${items.length !== 1 ? "es" : ""}` +
+    (activeRestaurant !== "all" ? ` from ${restaurantNames[activeRestaurant]}` : "") +
+    (searchQuery ? ` matching "${searchQuery}"` : "");
+
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="no-results"><p>No dishes found</p><p>Try adjusting your search or filters</p></div>`;
+    return;
+  }
+
+  let html = "";
+  categoryOrder.forEach(cat => {
+    if (!grouped[cat]) return;
+    const catItems = grouped[cat];
+    html += `<div class="category-header"><h2>${cat}</h2><span class="count">${catItems.length} dish${catItems.length !== 1 ? "es" : ""}</span></div>`;
+    catItems.forEach(item => {
+      const minPrice = Math.min(...Object.values(item.prices));
+      const maxPrice = Math.max(...Object.values(item.prices));
+      const priceLabel = minPrice === maxPrice ? `$${minPrice.toFixed(2)}` : `$${minPrice.toFixed(2)}\u2013$${maxPrice.toFixed(2)}`;
+
+      let tagsHtml = "";
+      if (item.tags.includes("gf")) tagsHtml += `<span class="tag tag-gf">GF</span>`;
+      if (item.tags.includes("spicy")) tagsHtml += `<span class="tag tag-spicy">Spicy</span>`;
+      if (item.tags.includes("vegetarian")) tagsHtml += `<span class="tag tag-vegetarian">Veg</span>`;
+      tagsHtml += `<span class="tag tag-restaurant">${restaurantNames[item.restaurant]}</span>`;
+
+      let pricingHtml = "";
+      const priceEntries = Object.entries(item.prices);
+      const hasSinglePrice = priceEntries.length === 1 && priceEntries[0][0] === "";
+      if (showPrices && !hasSinglePrice) {
+        pricingHtml = `<div class="pricing-detail">`;
+        for (const [label, price] of priceEntries) {
+          pricingHtml += `<span>${label}</span><span class="price-val">$${price.toFixed(2)}</span>`;
+        }
+        pricingHtml += `</div>`;
+      }
+
+      html += `
+        <div class="menu-card">
+          <div class="card-top">
+            <h3>${item.name}</h3>
+            <span class="price-range">${priceLabel}</span>
+          </div>
+          <p class="card-desc">${item.description}</p>
+          <div class="card-meta">${tagsHtml}</div>
+          ${pricingHtml}
+        </div>`;
+    });
+  });
+
+  grid.innerHTML = html;
+}
+
+// Event listeners
+document.querySelectorAll(".meal-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".meal-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    activeMeal = tab.dataset.meal;
+    render();
+  });
+});
+
+restaurantSelect.addEventListener("change", () => {
+  activeRestaurant = restaurantSelect.value;
+  render();
+});
+
+searchInput.addEventListener("input", () => {
+  searchQuery = searchInput.value.trim();
+  render();
+});
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const f = btn.dataset.filter;
+    if (activeFilters.has(f)) {
+      activeFilters.delete(f);
+      btn.classList.remove("active");
+    } else {
+      activeFilters.add(f);
+      btn.classList.add("active");
+    }
+    render();
+  });
+});
+
+priceToggle.addEventListener("click", () => {
+  showPrices = !showPrices;
+  priceToggle.classList.toggle("active", showPrices);
+  priceToggle.textContent = showPrices ? "Hide Prices" : "Show Prices";
+  render();
+});
+
+// Theme toggle
+const themeToggle = document.getElementById("themeToggle");
+const savedTheme = localStorage.getItem("menu-theme") || "dark";
+document.documentElement.setAttribute("data-theme", savedTheme);
+themeToggle.textContent = savedTheme === "dark" ? "Light" : "Dark";
+
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("menu-theme", next);
+  themeToggle.textContent = next === "dark" ? "Light" : "Dark";
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
